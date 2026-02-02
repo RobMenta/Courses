@@ -463,3 +463,73 @@ body{
   border-top: 1px solid var(--stroke);
   margin: 14px 0;
 }
+/* ===== Sections / blocs (familles) ===== */
+.section{
+  list-style:none;
+  margin: 0 0 12px 0;
+  padding: 0;
+  border: 1px solid rgba(34,48,67,.75);
+  background: rgba(16,27,39,.55);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.section__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(34,48,67,.55);
+  background: rgba(15,22,32,.55);
+}
+.section__title{
+  font-weight: 900;
+  letter-spacing:.2px;
+}
+.section__count{
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid rgba(34,48,67,.65);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(11,15,20,.25);
+}
+.section__items{
+  list-style:none;
+  margin:0;
+  padding: 10px;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+
+/* ===== Toggle switch ===== */
+.toggle{
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(34,48,67,.85);
+  background: rgba(11,15,20,.35);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  flex: 0 0 auto;
+  transition: background .15s ease, border-color .15s ease;
+}
+.toggle__thumb{
+  position:absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(232,238,247,.95);
+  transition: transform .15s ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+.toggle.is-on{
+  background: rgba(83,208,255,.22);
+  border-color: rgba(83,208,255,.55);
+}
+.toggle.is-on .toggle__thumb{
+  transform: translateX(18px);
+}

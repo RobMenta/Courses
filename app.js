@@ -309,10 +309,12 @@ function render() {
     handle.setAttribute("aria-label", "Réordonner");
     handle.tabIndex = 0;
 
-    const checkbox = document.createElement("input");
-    checkbox.className = "checkbox";
-    checkbox.type = "checkbox";
-    checkbox.checked = it.checked;
+    const toggle = document.createElement("button");
+toggle.className = "toggle" + (it.checked ? " is-on" : "");
+toggle.type = "button";
+toggle.setAttribute("aria-pressed", it.checked ? "true" : "false");
+toggle.title = "Cocher / décocher";
+
 
     const name = document.createElement("div");
     name.className = "name";
@@ -357,17 +359,18 @@ function render() {
     controls.appendChild(del);
 
     li.appendChild(handle);
-    li.appendChild(checkbox);
+    li.appendChild(toggle);
     li.appendChild(name);
     li.appendChild(controls);
     els.itemsList.appendChild(li);
 
-    checkbox.addEventListener("change", () => {
-      it.checked = checkbox.checked;
-      saveState(state);
-      render();
-      computeTotal();
-    });
+    toggle.addEventListener("click", () => {
+  it.checked = !it.checked;
+  saveState(state);
+  render();
+  computeTotal();
+});
+
 
     price.addEventListener("input", () => {
       it.price = price.value;

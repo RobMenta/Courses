@@ -66,6 +66,7 @@ body{
 .brand__title{font-weight:1000; letter-spacing:.2px; font-size:16px}
 .brand__sub{color:var(--muted); font-size:12px; margin-top:2px}
 
+/* Icon button */
 .icon-btn{
   border:1px solid var(--stroke2);
   background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
@@ -85,6 +86,7 @@ body{
   padding: 14px var(--pad) calc(22px + env(safe-area-inset-bottom)) var(--pad);
 }
 
+/* Tabs */
 .tabs{
   display:flex;
   gap:10px;
@@ -112,7 +114,7 @@ body{
 .panel{display:none}
 .panel.is-active{display:block}
 
-/* ---------- Summary ---------- */
+/* ---------- Cards / Summary ---------- */
 .summary{
   display:flex;
   gap:12px;
@@ -130,7 +132,6 @@ body{
   position: relative;
   overflow:hidden;
 }
-
 .summary__card::before{
   content:"";
   position:absolute;
@@ -138,7 +139,6 @@ body{
   background: radial-gradient(700px 240px at 10% 0%, rgba(83,208,255,.18), transparent 55%);
   pointer-events:none;
 }
-
 .summary__label{color:var(--muted); font-size:12px; position:relative}
 .summary__value{
   font-size: 34px;
@@ -158,7 +158,7 @@ body{
   flex-wrap:wrap;
 }
 
-/* ---------- Buttons ---------- */
+/* Buttons */
 .btn{
   border:1px solid rgba(83,208,255,.38);
   background: linear-gradient(180deg, rgba(83,208,255,.20), rgba(83,208,255,.12));
@@ -279,6 +279,7 @@ body{
   background: linear-gradient(180deg, rgba(124,255,200,.12), rgba(12,19,30,.80));
 }
 
+/* drag handle */
 .handle{
   width:36px;
   height:46px;
@@ -290,45 +291,20 @@ body{
   justify-content:center;
   cursor:grab;
   user-select:none;
+  color: rgba(234,241,255,.95);
 }
 .handle:active{cursor:grabbing}
 .item.is-dragging{opacity:.95}
 
-/* Switch */
-.toggle{
-  width:54px;
-  height:32px;
-  border-radius: 999px;
-  border:1px solid var(--stroke2);
-  background: rgba(255,255,255,.06);
-  position:relative;
-  cursor:pointer;
-  flex: 0 0 auto;
-  box-shadow: 0 10px 22px rgba(0,0,0,.18);
-  transition: .16s ease;
-}
-.toggle::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  left:4px;
-  transform: translateY(-50%);
-  width:24px;
-  height:24px;
-  border-radius: 999px;
-  background: rgba(234,241,255,.92);
-  box-shadow: 0 10px 18px rgba(0,0,0,.25);
-  transition: .16s ease;
-}
-.toggle.is-on{
-  background: linear-gradient(90deg, rgba(83,208,255,.30), rgba(124,255,200,.22));
-  border-color: rgba(83,208,255,.45);
-}
-.toggle.is-on::after{
-  left: calc(100% - 28px);
-  background: #ffffff;
+/* Checkbox (si tu gardes la checkbox) */
+.checkbox{
+  width:22px;
+  height:22px;
+  transform: scale(1.05);
+  accent-color: var(--accent);
 }
 
+/* Name + controls */
 .name{
   flex:1;
   min-width:0;
@@ -392,7 +368,7 @@ body{
   flex:1;
 }
 
-/* ---------- Panels ---------- */
+/* ---------- Panels (recipes/budget) ---------- */
 .panel__header{
   border:1px solid var(--stroke);
   background: rgba(255,255,255,.03);

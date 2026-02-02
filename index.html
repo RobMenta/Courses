@@ -1,214 +1,489 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f14" />
-  <title>Liste de course</title>
+:root{
+  --bg: #070A0F;
+  --bg2:#0B111A;
+  --card:#0F1723;
+  --card2:#0C131E;
 
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+  --stroke: rgba(255,255,255,.08);
+  --stroke2: rgba(255,255,255,.14);
 
-  <!-- IMPORTANT: chemins en ./ + petit cache-bust -->
-  <link rel="stylesheet" href="./styles.css?v=7" />
+  --text:#EAF1FF;
+  --muted:#A7B4CC;
 
-  <!-- Safety net: si jamais le CSS ne charge pas, au moins les panels se cachent -->
-  <style>
-    .panel{display:none}
-    .panel.is-active{display:block}
-  </style>
-</head>
+  --accent:#53D0FF;
+  --accent2:#7CFFC8;
+  --danger:#FF5B6B;
 
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand__dot" aria-hidden="true"></div>
-      <div>
-        <div class="brand__title">Liste de course</div>
-        <div class="brand__sub">🟢 Offline • 📲 Écran d’accueil • 🧮 Total auto</div>
-      </div>
-    </div>
+  --shadow: 0 18px 60px rgba(0,0,0,.45);
+  --shadow2: 0 8px 30px rgba(0,0,0,.35);
 
-    <button class="icon-btn" id="btnSettings" title="Réglages">⚙️</button>
-  </header>
+  --r20:20px;
+  --r16:16px;
+  --r14:14px;
+  --r12:12px;
 
-  <main class="container">
-    <!-- Tabs -->
-    <nav class="tabs" role="tablist" aria-label="Navigation">
-      <button class="tab is-active" role="tab" aria-selected="true" data-tab="list">🛒 Liste</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="recipes">🍳 Recettes → Liste</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="budget">💶 Budget → Liste</button>
-    </nav>
+  --pad:14px;
+}
 
-    <!-- Panel: LIST -->
-    <section class="panel is-active" id="tab-list" role="tabpanel">
-      <div class="panel__header">
-        <h2 style="margin:0 0 6px 0;">🛒 Ta liste</h2>
-        <div class="muted">
-          Coche ✅, ajuste la quantité 🔢, mets ton prix 💶, et le total se calcule tout seul.
-          Tu peux aussi glisser ☰ pour réordonner.
-        </div>
-      </div>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 
-      <div class="summary">
-        <div class="summary__card">
-          <div class="summary__label">🧮 Total coché</div>
-          <div class="summary__value"><span id="totalValue">0,00</span> €</div>
-          <div class="summary__hint" id="totalHint">Coche un produit + saisis un prix pour l’ajouter au total.</div>
-        </div>
+  background:
+    radial-gradient(1100px 700px at 10% -10%, rgba(83,208,255,.18), transparent 55%),
+    radial-gradient(900px 650px at 100% 0%, rgba(124,255,200,.11), transparent 52%),
+    radial-gradient(900px 650px at 60% 110%, rgba(255,91,107,.10), transparent 55%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+}
 
-        <div class="summary__actions">
-          <button class="btn" data-ai="suggest_from_checked" title="Recettes depuis ce que tu as coché">
-            ✨ Générer recettes avec ce que j’ai coché
-          </button>
-          <button class="btn btn-ghost" id="btnUncheckAll">🧼 Tout décocher</button>
-          <button class="btn btn-ghost" id="btnResetPrices">🧾 Vider prix</button>
-          <button class="btn btn-danger" id="btnResetAll">🔥 Reset</button>
-        </div>
-      </div>
+/* ---------- Topbar ---------- */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  padding: calc(env(safe-area-inset-top) + 10px) var(--pad) 12px var(--pad);
+  background: rgba(7,10,15,.72);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--stroke);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
 
-      <div class="list-wrapper">
-        <div class="legend">
-          <div class="legend__item"><span class="chip">☰</span> glisse</div>
-          <div class="legend__item"><span class="chip">✅</span> coche</div>
-          <div class="legend__item"><span class="chip">×</span> quantité</div>
-          <div class="legend__item"><span class="chip">€</span> prix</div>
-        </div>
+.brand{display:flex; align-items:center; gap:12px}
+.brand__dot{
+  width:12px;height:12px;border-radius:50%;
+  background: conic-gradient(from 210deg, var(--accent), var(--accent2), #b36bff, var(--accent));
+  box-shadow: 0 0 0 7px rgba(83,208,255,.14);
+}
+.brand__title{font-weight:1000; letter-spacing:.2px; font-size:16px}
+.brand__sub{color:var(--muted); font-size:12px; margin-top:2px}
 
-        <ul class="items" id="itemsList"></ul>
+/* nicer icon button */
+.icon-btn{
+  border:1px solid var(--stroke2);
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+  color:var(--text);
+  border-radius: 14px;
+  padding:10px 12px;
+  cursor:pointer;
+  box-shadow: var(--shadow2);
+}
+.icon-btn:hover{border-color: rgba(83,208,255,.35)}
+.icon-btn:active{transform: translateY(1px)}
 
-        <div class="add-row">
-          <button class="btn btn-ghost" id="btnAddQuick">➕ Ajouter</button>
+/* ---------- Layout ---------- */
+.container{
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 14px var(--pad) calc(22px + env(safe-area-inset-bottom)) var(--pad);
+}
 
-          <form id="addRow" hidden style="display:flex; gap:10px; flex:1;">
-            <input class="input" id="addName" placeholder="Nom du produit…" autocomplete="off" />
-            <button class="btn" id="btnAddConfirm">Ajouter</button>
-            <button class="btn btn-ghost" id="btnAddCancel">Annuler</button>
-          </form>
-        </div>
-      </div>
-    </section>
+.tabs{
+  display:flex;
+  gap:10px;
+  margin: 10px 0 14px 0;
+}
+.tab{
+  flex:1;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  padding: 11px 12px;
+  border-radius: 999px;
+  cursor:pointer;
+  font-weight: 1000;
+  letter-spacing:.15px;
+  transition: .15s ease;
+  box-shadow: 0 10px 24px rgba(0,0,0,.20);
+}
+.tab:hover{border-color: rgba(83,208,255,.25)}
+.tab.is-active{
+  background: linear-gradient(90deg, rgba(83,208,255,.20), rgba(124,255,200,.14));
+  border-color: rgba(83,208,255,.42);
+}
 
-    <!-- Panel: RECIPES -->
-    <section class="panel" id="tab-recipes" role="tabpanel">
-      <div class="panel__header">
-        <h2 style="margin:0 0 6px 0;">🍳 Recettes → Liste</h2>
-        <div class="muted">
-          L’IA te propose des recettes qui “fonctionnent vraiment”, puis tu peux appliquer : ça coche / ajoute / met les quantités dans ta liste 🛒
-        </div>
-      </div>
+.panel{display:none}
+.panel.is-active{display:block}
 
-      <div class="ai-box">
-        <div class="label">1) Idées à partir de ce que tu as coché</div>
-        <div class="ai-actions">
-          <button class="btn" data-ai="suggest_from_checked">🧠 Idées recettes (avec ma sélection)</button>
-          <button class="btn btn-ghost" data-ai="suggest_plus_missing">🛍️ Idées + 1–2 achats max</button>
-        </div>
+/* ---------- Cards / Summary ---------- */
+.summary{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom: 12px;
+}
 
-        <hr class="hr" />
+.summary__card{
+  flex: 1 1 280px;
+  border:1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(15,23,35,.92), rgba(12,19,30,.86));
+  border-radius: var(--r20);
+  padding: 14px 14px 12px 14px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow:hidden;
+}
+.summary__card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: radial-gradient(700px 240px at 10% 0%, rgba(83,208,255,.18), transparent 55%);
+  pointer-events:none;
+}
 
-        <div class="label">2) Une envie → liste automatique</div>
-        <div class="muted small">Ex : “pâtes carbo healthy”, “wraps protéinés”, “salade rapide”…</div>
+.summary__label{color:var(--muted); font-size:12px; position:relative}
+.summary__value{
+  font-size: 34px;
+  font-weight: 1000;
+  margin-top: 4px;
+  letter-spacing: .2px;
+  position:relative;
+}
+.summary__hint{color:var(--muted); font-size:12px; margin-top:6px; line-height:1.35; position:relative}
 
-        <div class="toolbar">
-          <input class="input" id="aiPromptRecipes" placeholder="Écris ton envie ici…" />
-          <button class="btn" data-ai="plan_recipe">✨ Générer + préparer la liste</button>
-          <button class="btn btn-ghost" id="btnClearAi">🧽 Effacer</button>
-        </div>
+.summary__actions{
+  flex: 1 1 280px;
+  display:flex;
+  gap:10px;
+  align-items:stretch;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
 
-        <div class="ai-output">
-          <div class="ai-output__title">📌 Résultat</div>
-          <pre class="pre" id="aiOutRecipes">—</pre>
+.btn{
+  border:1px solid rgba(83,208,255,.38);
+  background: linear-gradient(180deg, rgba(83,208,255,.20), rgba(83,208,255,.12));
+  color: var(--text);
+  font-weight: 1000;
+  border-radius: 14px;
+  padding: 11px 13px;
+  cursor:pointer;
+  transition: .12s ease;
+  box-shadow: 0 12px 26px rgba(0,0,0,.22);
+}
+.btn:hover{background: rgba(83,208,255,.22)}
+.btn:active{transform: translateY(1px)}
+.btn:disabled{opacity:.5; cursor:not-allowed}
 
-          <div class="ai-output__actions">
-            <button class="btn" id="btnApplyAi" disabled>✅ Appliquer à ma liste</button>
-          </div>
-        </div>
-      </div>
-    </section>
+.btn-ghost{
+  border:1px solid var(--stroke2);
+  background: rgba(255,255,255,.06);
+}
+.btn-ghost:hover{border-color: rgba(83,208,255,.25)}
 
-    <!-- Panel: BUDGET -->
-    <section class="panel" id="tab-budget" role="tabpanel">
-      <div class="panel__header">
-        <h2 style="margin:0 0 6px 0;">💶 Budget → Liste (semaine)</h2>
-        <div class="muted">
-          Tu mets un budget + un objectif : l’IA propose une semaine de courses. Ensuite tu peux appliquer : ça coche / ajoute / quantités dans ta liste 🛒
-        </div>
-      </div>
+.btn-danger{
+  border:1px solid rgba(255,91,107,.48);
+  background: linear-gradient(180deg, rgba(255,91,107,.16), rgba(255,91,107,.10));
+}
+.btn-danger:hover{background: rgba(255,91,107,.18)}
 
-      <div class="ai-box">
-        <div class="grid2">
-          <div>
-            <label class="label" for="budgetValue">Budget (€)</label>
-            <input class="input" id="budgetValue" placeholder="Ex: 80" inputmode="decimal" />
-          </div>
+/* ---------- Inputs ---------- */
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin: 10px 0 10px 0;
+}
+.toolbar .input{flex:1}
 
-          <div>
-            <label class="label" for="budgetGoal">Objectif</label>
-            <select class="select" id="budgetGoal">
-              <option value="equilibre">🥗 Équilibré</option>
-              <option value="proteine">💪 Protéiné</option>
-              <option value="perte_poids">🔥 Perte de poids</option>
-            </select>
-          </div>
-        </div>
+.input,.select,.textarea{
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  padding: 11px 12px;
+  border-radius: 14px;
+  outline:none;
+}
+.input:focus,.select:focus,.textarea:focus{
+  border-color: rgba(83,208,255,.45);
+  box-shadow: 0 0 0 4px rgba(83,208,255,.10);
+}
+.textarea{resize: vertical}
 
-        <label class="label" for="aiPromptBudget">Contraintes (optionnel)</label>
-        <textarea class="textarea" id="aiPromptBudget" rows="3" placeholder="Ex : pas de porc, pas de lactose, rapide, + légumes…"></textarea>
+.label{
+  display:block;
+  margin: 10px 0 6px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 1000;
+}
 
-        <div class="ai-actions" style="margin-top:10px;">
-          <button class="btn" data-ai="weekly_plan">🧾 Générer semaine</button>
-          <button class="btn btn-ghost" id="btnClearAi">🧽 Effacer</button>
-        </div>
+/* ---------- List wrapper ---------- */
+.list-wrapper{
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.03);
+  border-radius: var(--r20);
+  padding: 12px;
+  box-shadow: var(--shadow2);
+}
 
-        <div class="ai-output">
-          <div class="ai-output__title">📌 Résultat</div>
-          <pre class="pre" id="aiOutBudget">—</pre>
-          <div class="ai-output__actions">
-            <button class="btn" id="btnApplyAi" disabled>✅ Appliquer à ma liste</button>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+.legend{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom: 10px;
+}
+.legend__item{
+  color: var(--muted);
+  font-size: 12px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:22px;
+  min-width:22px;
+  padding:0 8px;
+  border-radius:999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.06);
+  font-weight: 1000;
+}
 
-  <!-- Settings dialog -->
-  <dialog class="dialog" id="settingsDialog">
-    <form class="dialog__form" method="dialog">
-      <div class="dialog__header">
-        <div style="font-weight:1000;">⚙️ Réglages</div>
-        <button class="icon-btn" value="cancel">✕</button>
-      </div>
+/* ---------- Items ---------- */
+.items{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 
-      <div class="dialog__body">
-        <label class="label" for="aiEndpoint">URL Backend IA (Worker /ai)</label>
-        <input class="input" id="aiEndpoint" placeholder="https://...workers.dev/ai" />
+.item{
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(15,23,35,.90), rgba(12,19,30,.82));
+  border-radius: var(--r16);
+  padding: 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  box-shadow: 0 14px 30px rgba(0,0,0,.22);
+  transition: .12s ease;
+  touch-action: pan-y;
+}
+.item:hover{border-color: rgba(83,208,255,.22)}
+.item.is-checked{
+  border-color: rgba(124,255,200,.28);
+  background: linear-gradient(180deg, rgba(124,255,200,.12), rgba(12,19,30,.80));
+}
 
-        <div class="grid2" style="margin-top:10px;">
-          <div>
-            <label class="label" for="currency">Devise</label>
-            <input class="input" id="currency" value="EUR" disabled />
-          </div>
+/* drag handle */
+.handle{
+  width:36px;
+  height:46px;
+  border-radius: 14px;
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,.05);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:grab;
+  user-select:none;
+  color: rgba(234,241,255,.95);
+}
+.handle:active{cursor:grabbing}
+.item.is-dragging{opacity:.95}
 
-          <div>
-            <label class="label" for="qtyMax">Quantité max (menu)</label>
-            <input class="input" id="qtyMax" type="number" min="2" max="50" value="10" />
-          </div>
-        </div>
+/* --- BEAUTIFUL TOGGLE SWITCH --- */
+.toggle{
+  width:54px;
+  height:32px;
+  border-radius: 999px;
+  border:1px solid var(--stroke2);
+  background: rgba(255,255,255,.06);
+  position:relative;
+  cursor:pointer;
+  flex: 0 0 auto;
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+  transition: .16s ease;
+}
+.toggle::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:4px;
+  transform: translateY(-50%);
+  width:24px;
+  height:24px;
+  border-radius: 999px;
+  background: rgba(234,241,255,.92);
+  box-shadow: 0 10px 18px rgba(0,0,0,.25);
+  transition: .16s ease;
+}
+.toggle.is-on{
+  background: linear-gradient(90deg, rgba(83,208,255,.30), rgba(124,255,200,.22));
+  border-color: rgba(83,208,255,.45);
+}
+.toggle.is-on::after{
+  left: calc(100% - 28px);
+  background: white;
+}
 
-        <div class="muted small" style="margin-top:10px;">
-          ✅ La liste marche offline. <br/>
-          🤖 L’IA nécessite Internet + backend.
-        </div>
-      </div>
+.name{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.name__title{
+  font-weight: 1000;
+  font-size: 15px;
+  line-height:1.15;
+  word-break: break-word;
+}
+.name__sub{
+  font-size:12px;
+  color: var(--muted);
+}
 
-      <div class="dialog__footer">
-        <button class="btn btn-ghost" value="cancel">Annuler</button>
-        <button class="btn" id="btnSaveSettings" value="default">Enregistrer</button>
-      </div>
-    </form>
-  </dialog>
+.controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
 
-  <script src="./app.js?v=7"></script>
-</body>
-</html>
+.price{
+  width:96px;
+  text-align:right;
+  font-weight: 1000;
+}
+.qty{
+  width:80px;
+  font-weight: 1000;
+}
+
+.delete{
+  border: 1px solid var(--stroke2);
+  background: rgba(255,255,255,.06);
+  color: rgba(234,241,255,.92);
+  border-radius: 14px;
+  padding: 10px 10px;
+  cursor:pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.16);
+}
+.delete:hover{
+  border-color: rgba(255,91,107,.35);
+  background: rgba(255,91,107,.12);
+}
+.delete:active{transform: translateY(1px)}
+
+/* ---------- Add row ---------- */
+.add-row{
+  margin-top: 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.add-row form[hidden]{display:none !important}
+.add-row form{
+  display:flex;
+  gap:10px;
+  flex:1;
+}
+
+/* ---------- Panels (recipes/budget) ---------- */
+.panel__header{
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,.03);
+  border-radius: var(--r20);
+  padding: 14px;
+  box-shadow: var(--shadow2);
+  margin-bottom:12px;
+}
+.panel__header h2{margin:0 0 6px 0}
+.muted{color: var(--muted); line-height:1.45}
+.small{font-size:12px}
+
+.ai-box{
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.03);
+  border-radius: var(--r20);
+  padding: 14px;
+  box-shadow: var(--shadow2);
+}
+
+.ai-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top: 8px;
+}
+
+.ai-output{
+  margin-top: 14px;
+  border-top: 1px solid var(--stroke);
+  padding-top: 12px;
+}
+.ai-output__title{
+  font-weight: 1000;
+  margin-bottom: 8px;
+}
+.pre{
+  margin:0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: rgba(0,0,0,.22);
+  overflow:auto;
+  max-height: 340px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.ai-output__actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top: 10px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media (max-width: 520px){
+  .grid2{grid-template-columns:1fr}
+  .price{width:88px}
+  .qty{width:74px}
+}
+
+/* ---------- Dialog ---------- */
+.dialog{
+  border:none;
+  border-radius: 18px;
+  background: rgba(15,23,35,.96);
+  color: var(--text);
+  width: min(740px, calc(100vw - 22px));
+  box-shadow: var(--shadow);
+}
+.dialog::backdrop{background: rgba(0,0,0,.58)}
+.dialog__form{margin:0}
+.dialog__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 14px 0 14px;
+}
+.dialog__body{padding: 12px 14px 0 14px}
+.dialog__footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding: 14px;
+}
+.hr{
+  border:none;
+  border-top: 1px solid var(--stroke);
+  margin: 14px 0;
+}

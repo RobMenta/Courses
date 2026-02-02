@@ -2,15 +2,198 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TEST</title>
-  <style>
-    body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:24px}
-    .box{padding:16px;border:1px solid #333;border-radius:12px}
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+
+  <title>Liste de course</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+
+  <!-- Styles (IMPORTANT : pas de CSS inline ici) -->
+  <link rel="stylesheet" href="./styles.css?v=1" />
 </head>
+
 <body>
-  <h1>✅ GitHub Pages sert bien index.html</h1>
-  <div class="box">Si tu vois ça STYLÉ (fond noir), Pages fonctionne.</div>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__dot" aria-hidden="true"></div>
+      <div>
+        <div class="brand__title">Liste de course</div>
+        <div class="brand__sub">🟢 Offline • 📲 Écran d’accueil • 🧮 Total auto</div>
+      </div>
+    </div>
+
+    <button id="btnSettings" class="icon-btn" title="Réglages">⚙️</button>
+  </header>
+
+  <main class="container">
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist" aria-label="Navigation">
+      <button class="tab is-active" role="tab" aria-selected="true" data-tab="list">🛒 Liste</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="recipes">🍳 Recettes → Liste</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="budget">💶 Budget → Liste</button>
+    </nav>
+
+    <!-- PANEL LIST -->
+    <section class="panel is-active" id="tab-list" role="tabpanel">
+      <div class="panel__header">
+        <h2>🛒 Ta liste</h2>
+        <div class="muted">
+          Coche ✅, ajuste la quantité 🔢, mets ton prix 💶, et le total se calcule tout seul.
+          Tu peux aussi glisser ☰ pour réordonner.
+        </div>
+
+        <div class="toolbar">
+          <input id="searchInput" class="input" placeholder="(optionnel) rechercher…" />
+          <button id="btnAddQuick" class="btn btn-ghost">➕ Ajouter</button>
+        </div>
+
+        <div class="summary">
+          <div class="summary__card">
+            <div class="summary__label">🧮 Total coché</div>
+            <div class="summary__value"><span id="totalValue">0,00</span> €</div>
+            <div class="summary__hint" id="totalHint">Coche un produit + saisis un prix pour l’ajouter au total.</div>
+          </div>
+
+          <div class="summary__actions">
+            <button class="btn" data-ai="suggest_from_checked">✨ Recettes avec ce que j’ai coché</button>
+            <button class="btn btn-ghost" id="btnUncheckAll">🧼 Tout décocher</button>
+            <button class="btn btn-ghost" id="btnResetPrices">🧾 Vider prix</button>
+            <button class="btn btn-danger" id="btnResetAll">🔥 Reset</button>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div class="legend__item"><span class="chip">☰</span> glisse</div>
+          <div class="legend__item"><span class="chip">⏻</span> switch</div>
+          <div class="legend__item"><span class="chip">×</span> quantité</div>
+          <div class="legend__item"><span class="chip">€</span> prix</div>
+        </div>
+      </div>
+
+      <div class="list-wrapper">
+        <ul class="items" id="itemsList"></ul>
+
+        <div class="add-row">
+          <form id="addRow" hidden>
+            <input id="addName" class="input" placeholder="Nom du produit…" />
+            <button id="btnAddConfirm" class="btn" type="submit">✅ Ajouter</button>
+            <button id="btnAddCancel" class="btn btn-ghost" type="button">Annuler</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL RECIPES -->
+    <section class="panel" id="tab-recipes" role="tabpanel">
+      <div class="panel__header">
+        <h2>🍳 Recettes → Liste</h2>
+        <div class="muted">
+          L’IA te propose des recettes qui “fonctionnent vraiment”, puis tu peux appliquer :
+          ça coche / ajoute / met les quantités dans ta liste 🛒
+        </div>
+      </div>
+
+      <div class="ai-box">
+        <div class="ai-actions">
+          <button class="btn" data-ai="suggest_from_checked">🧠 Idées recettes (avec ma sélection)</button>
+          <button class="btn btn-ghost" data-ai="suggest_plus_2">🛍️ Idées + 1–2 achats max</button>
+        </div>
+
+        <label class="label">2) Une envie → liste automatique</label>
+        <textarea id="aiPromptRecipes" class="textarea" rows="3" placeholder="Ex : pâtes carbo healthy, wraps protéinés…"></textarea>
+
+        <div class="ai-actions">
+          <button class="btn" data-ai="plan_recipe">✨ Générer + préparer la liste</button>
+          <button class="btn btn-ghost" id="btnClearAi">🧽 Effacer</button>
+        </div>
+
+        <div class="ai-output">
+          <div class="ai-output__title">📌 Résultat</div>
+          <pre class="pre" id="aiOutRecipes">—</pre>
+
+          <div class="ai-output__actions">
+            <button class="btn" id="btnApplyAi" disabled>✅ Appliquer à ma liste</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL BUDGET -->
+    <section class="panel" id="tab-budget" role="tabpanel">
+      <div class="panel__header">
+        <h2>💶 Budget → Liste (semaine)</h2>
+        <div class="muted">
+          Tu mets un budget + un objectif : l’IA propose une semaine de courses. Ensuite tu peux appliquer : ça coche / ajoute / quantités.
+        </div>
+      </div>
+
+      <div class="ai-box">
+        <div class="grid2">
+          <div>
+            <label class="label">Budget (€)</label>
+            <input id="budgetValue" class="input" placeholder="Ex: 80" inputmode="decimal" />
+          </div>
+          <div>
+            <label class="label">Objectif</label>
+            <select id="budgetGoal" class="select">
+              <option value="equilibre">🥗 Équilibré</option>
+              <option value="proteine">💪 Protéiné</option>
+              <option value="perte">🔥 Perte de poids</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="label">Contraintes (optionnel)</label>
+        <input id="aiPromptBudget" class="input" placeholder="Ex : pas de porc, pas de lactose, rapide…" />
+
+        <div class="ai-actions">
+          <button class="btn" data-ai="weekly_plan">🧾 Générer semaine</button>
+          <button class="btn btn-ghost" id="btnClearAiBudget">🧽 Effacer</button>
+        </div>
+
+        <div class="ai-output">
+          <div class="ai-output__title">📌 Résultat</div>
+          <pre class="pre" id="aiOutBudget">—</pre>
+
+          <div class="ai-output__actions">
+            <button class="btn" id="btnApplyAiBudget" disabled>✅ Appliquer à ma liste</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS DIALOG -->
+    <dialog class="dialog" id="settingsDialog">
+      <form method="dialog" class="dialog__form">
+        <div class="dialog__header">
+          <strong>⚙️ Réglages</strong>
+          <button class="icon-btn" value="cancel">✕</button>
+        </div>
+
+        <div class="dialog__body">
+          <label class="label">URL backend IA (Cloudflare Worker)</label>
+          <input id="aiEndpoint" class="input" placeholder="https://...workers.dev/ai" />
+
+          <hr class="hr"/>
+
+          <label class="label">Quantité max (menu)</label>
+          <input id="qtyMax" class="input" inputmode="numeric" placeholder="10" />
+        </div>
+
+        <div class="dialog__footer">
+          <button class="btn btn-ghost" value="cancel">Annuler</button>
+          <button class="btn" id="btnSaveSettings" value="ok">✅ Sauver</button>
+        </div>
+      </form>
+    </dialog>
+
+  </main>
+
+  <!-- App -->
+  <script src="./app.js?v=1" defer></script>
 </body>
 </html>

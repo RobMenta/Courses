@@ -1,5 +1,5 @@
 // sw.js — stable PWA cache (anti "switch" / anti mélange de versions)
-const VERSION = "v8"; // <- incrémente si tu modifies des fichiers core
+const VERSION = "v9"; // <- incrémente si tu modifies des fichiers core
 const CACHE_PREFIX = "courses-pwa-";
 const CACHE_NAME = `${CACHE_PREFIX}${VERSION}`;
 

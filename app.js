@@ -322,7 +322,6 @@ function itemsByCategory() {
 
 function makeCategorySelect(current, onChange) {
   const sel = document.createElement("select");
-  // ✅ IMPORTANT: NE PAS utiliser la classe .qty ici (elle impose une largeur fixe)
   sel.className = "select";
   sel.title = "Changer de bloc";
   sel.setAttribute("aria-label", "Catégorie");
@@ -439,11 +438,9 @@ function render() {
         qty.appendChild(opt);
       }
 
-      // ✅ catégorie editable
       const catSel = makeCategorySelect(it.category || "Divers", (newCat) => {
         it.category = sanitizeCategory(newCat);
         saveState(state);
-        // ✅ IMPORTANT : si tu changes de catégorie pendant une recherche, on veut refresh sans perdre le filtre
         render();
         computeTotal();
       });
@@ -663,8 +660,6 @@ if (els.searchInput) {
 function ensureAddCategorySelect() {
   if (!els.addRow) return null;
 
-  // ✅ CORRECTIF: ton addRow est un <form id="addRow">, donc il faut viser le formulaire (els.addRow),
-  // pas le wrapper .add-row
   let sel = document.getElementById("addCategory");
   if (sel) return sel;
 
@@ -683,7 +678,6 @@ function ensureAddCategorySelect() {
   }
   sel.value = "Divers";
 
-  // insert after addName (dans le form)
   const addNameEl = els.addName;
   if (addNameEl && addNameEl.parentElement) {
     addNameEl.insertAdjacentElement("afterend", sel);
@@ -719,19 +713,16 @@ function findItemBest(name) {
   const q = (name || "").toString().trim();
   if (!q) return null;
 
-  // 1) exact norm
   const qn = norm(q);
   let hit = state.items.find((it) => norm(it.name) === qn);
   if (hit) return hit;
 
-  // 2) includes either way
   hit = state.items.find((it) => {
     const n = norm(it.name);
     return n.includes(qn) || qn.includes(n);
   });
   if (hit) return hit;
 
-  // 3) token overlap (simple)
   const qt = norm(q).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   if (!qt.length) return null;
 
@@ -782,7 +773,6 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
   const exists = findItemBest(name);
   if (exists) {
     exists.checked = true;
-    // ✅ si l'utilisateur choisit un bloc différent lors de l'ajout, on le respecte
     if (category && sanitizeCategory(exists.category) !== category) exists.category = category;
     saveState(state);
     closeAdd();
@@ -802,7 +792,6 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
   computeTotal();
 });
 
-// ✅ BONUS: si l'utilisateur valide le form (Enter), on route sur le même handler
 if (els.addRow) {
   els.addRow.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -974,7 +963,6 @@ function renderAiRecipes(out) {
     if (time) tags.push(`⏱️ ${time}`);
     if (difficulty) tags.push(`😌 ${difficulty}`);
 
-    // ✅ Support quantité si objet {name, qty, note/unit}
     const ingLines = [];
     for (const x of ingredients) {
       if (typeof x === "string") { ingLines.push(x); continue; }
@@ -1130,7 +1118,6 @@ function renderAiBudget(out) {
     }
   }
 
-  // ✅ Support quantité sur la shopping list
   const shopLines = [];
   for (const x of shopping) {
     if (typeof x === "string") { shopLines.push(x); continue; }
@@ -1262,7 +1249,12 @@ function applyAiActions(out) {
     if (!type || !rawName) continue;
 
     const it = findItemBest(rawName);
-    const suggestedCategory = sanitizeCategory(a.category || "Divers");
+
+    // ✅ CORRECTIF: catégorie seulement si fournie explicitement par l'IA
+    const hasExplicitCategory =
+      Object.prototype.hasOwnProperty.call(a, "category") &&
+      String(a.category || "").trim() !== "";
+    const explicitCategory = hasExplicitCategory ? sanitizeCategory(a.category) : null;
 
     if (type === "check") {
       if (it) {
@@ -1276,19 +1268,20 @@ function applyAiActions(out) {
       }
     } else if (type === "add_item") {
       if (it) {
+        // existe déjà => on coche + qty, MAIS on ne change pas sa catégorie par défaut
         it.checked = true;
         const q = clamp(Number(a.qty) || 1, 1, 999);
         if (q > 1) it.qty = q;
 
-        // ✅ si IA donne une catégorie, on l'applique
-        if (suggestedCategory && sanitizeCategory(it.category) !== suggestedCategory) {
-          it.category = suggestedCategory;
+        // ✅ on change la catégorie uniquement si l'IA l'a donnée explicitement
+        if (explicitCategory && sanitizeCategory(it.category) !== explicitCategory) {
+          it.category = explicitCategory;
         }
 
         changed = true;
       } else {
         const name = rawName;
-        const category = suggestedCategory || "Divers";
+        const category = explicitCategory || "Divers";
         const id = `item_${slugify(category)}_${Date.now().toString(36)}_${slugify(name)}`;
         const newItem = {
           id,
@@ -1351,3 +1344,4 @@ if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
 if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
   els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
 }
+

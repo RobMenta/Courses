@@ -1,5 +1,12 @@
-// sw.js — stable PWA cache (anti "switch" / anti mélange de versions)
-const VERSION = "v10"; // <- incrémente si tu modifies des fichiers core
+// sw.js — update-safe PWA cache (évite mélange de versions + met à jour app.js/styles.css)
+// ✅ points clés :
+// - navigation: network-first + update du cache index.html
+// - assets same-origin: stale-while-revalidate
+// - précache des assets core
+// - purge des anciens caches à l’activate
+// - skipWaiting + clients.claim
+
+const VERSION = "v11"; // <- 🔥 incrémente quand tu modifies app.js / styles / index etc.
 const CACHE_PREFIX = "courses-pwa-";
 const CACHE_NAME = `${CACHE_PREFIX}${VERSION}`;
 
@@ -10,7 +17,7 @@ const CORE_ASSETS = [
   "./app.js",
   "./manifest.webmanifest",
   "./assets/icon-192.png",
-  "./assets/icon-512.png"
+  "./assets/icon-512.png",
 ];
 
 // Helper: only same-origin requests
@@ -23,30 +30,39 @@ function isSameOrigin(req) {
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
 
-    // Precache core assets
-    await cache.addAll(CORE_ASSETS);
+      // Precache core assets (best effort)
+      try {
+        await cache.addAll(CORE_ASSETS);
+      } catch {
+        // si un asset manque/404, on ne casse pas l’install
+        // (le SW fonctionnera quand même en runtime cache)
+      }
 
-    // Activate immediately (avoid "old SW keeps serving old stuff")
-    self.skipWaiting();
-  })());
+      // Activate immediately
+      self.skipWaiting();
+    })()
+  );
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil((async () => {
-    // Delete only OUR old caches (not everything)
-    const keys = await caches.keys();
-    await Promise.all(
-      keys
-        .filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME)
-        .map((k) => caches.delete(k))
-    );
+  event.waitUntil(
+    (async () => {
+      // Delete only OUR old caches (not everything)
+      const keys = await caches.keys();
+      await Promise.all(
+        keys
+          .filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME)
+          .map((k) => caches.delete(k))
+      );
 
-    // Take control of clients ASAP
-    await self.clients.claim();
-  })());
+      // Take control ASAP
+      await self.clients.claim();
+    })()
+  );
 });
 
 self.addEventListener("fetch", (event) => {
@@ -61,41 +77,50 @@ self.addEventListener("fetch", (event) => {
   // Only handle GET
   if (req.method !== "GET") return;
 
-  // NAVIGATION: network-first, fallback to cached index
+  // ---- NAVIGATION: network-first (anti "page bloquée sur vieille version")
   if (req.mode === "navigate") {
-    event.respondWith((async () => {
-      try {
-        const fresh = await fetch(req);
-        // Optional: update cached index silently
-        const cache = await caches.open(CACHE_NAME);
-        cache.put("./index.html", fresh.clone()).catch(() => {});
-        return fresh;
-      } catch {
-        const cache = await caches.open(CACHE_NAME);
-        return (await cache.match("./index.html")) || (await cache.match("./"));
-      }
-    })());
-    return;
-  }
+    event.respondWith(
+      (async () => {
+        try {
+          const fresh = await fetch(req);
 
-  // STATIC (same-origin): stale-while-revalidate
-  if (isSameOrigin(req)) {
-    event.respondWith((async () => {
-      const cache = await caches.open(CACHE_NAME);
-      const cached = await cache.match(req);
-
-      const fetchPromise = fetch(req)
-        .then((fresh) => {
-          cache.put(req, fresh.clone()).catch(() => {});
+          // update cached index silently
+          const cache = await caches.open(CACHE_NAME);
+          cache.put("./index.html", fresh.clone()).catch(() => {});
           return fresh;
-        })
-        .catch(() => null);
-
-      // Return cached immediately if available, else wait for network
-      return cached || (await fetchPromise) || cached;
-    })());
+        } catch {
+          const cache = await caches.open(CACHE_NAME);
+          return (
+            (await cache.match("./index.html")) ||
+            (await cache.match("./")) ||
+            Response.error()
+          );
+        }
+      })()
+    );
     return;
   }
 
-  // Other origins: just pass through
+  // ---- ASSETS same-origin: stale-while-revalidate (rapide + update derrière)
+  if (isSameOrigin(req)) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(req);
+
+        const fetchPromise = fetch(req)
+          .then((fresh) => {
+            cache.put(req, fresh.clone()).catch(() => {});
+            return fresh;
+          })
+          .catch(() => null);
+
+        // Return cached immediately if available, else wait for network
+        return cached || (await fetchPromise) || Response.error();
+      })()
+    );
+    return;
+  }
+
+  // Other origins: pass through (ne pas casser les appels externes)
 });

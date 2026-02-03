@@ -3,6 +3,9 @@
   - Toggle ON/OFF + prix + quantité => total
   - Séparation en blocs/familles (ordre magasin)
   - Réorganisation par glisser-déposer (touch-friendly) DANS une famille
+  - ✅ Changer un produit de bloc via dropdown
+  - ✅ Ajouter un produit dans le bloc choisi
+  - ✅ IA: apply + fiable + support category sur add_item
   - Sauvegarde localStorage
 
   ⚠️ IA: l'app appelle un BACKEND (Worker / Function). Ne jamais mettre une clé OpenAI ici.
@@ -63,6 +66,9 @@ const CATEGORIES = [
   { name: "Viandes", items: ["Saucisses","Escalope","Poisson pané","Cordon bleu"] },
   { name: "Surgelé", items: ["Poivron surgelé","Steak","Poisson","nuggets","Poisson pané (surgelé)","Pomme de terre surgelé","Glaces"] }
 ];
+
+const CATEGORY_NAMES = CATEGORIES.map((c) => c.name);
+const CATEGORY_SET = new Set(CATEGORY_NAMES);
 
 function norm(s) {
   return (s || "")
@@ -130,14 +136,21 @@ function saveSettings(s) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
 }
 
+function sanitizeCategory(cat) {
+  const c = (cat || "").toString().trim();
+  if (CATEGORY_SET.has(c)) return c;
+  return "Divers";
+}
+
 function sanitizeItem(it, fallback) {
+  const fb = fallback || it || {};
   return {
-    id: String(it.id ?? fallback.id),
-    name: String(it.name ?? fallback.name),
-    category: String(it.category ?? fallback.category ?? "Divers"),
-    checked: Boolean(it.checked),
-    qty: clamp(Number(it.qty ?? 1) || 1, 1, 999),
-    price: (it.price ?? "").toString()
+    id: String(it?.id ?? fb.id),
+    name: String(it?.name ?? fb.name ?? "Produit"),
+    category: sanitizeCategory(it?.category ?? fb.category ?? "Divers"),
+    checked: Boolean(it?.checked),
+    qty: clamp(Number(it?.qty ?? 1) || 1, 1, 999),
+    price: (it?.price ?? "").toString()
   };
 }
 
@@ -300,11 +313,32 @@ function itemsByCategory() {
   const map = new Map();
   for (const cat of CATEGORIES) map.set(cat.name, []);
   for (const it of state.items) {
-    const c = it.category || "Divers";
+    const c = sanitizeCategory(it.category);
     if (!map.has(c)) map.set(c, []);
     map.get(c).push(it);
   }
   return map;
+}
+
+function makeCategorySelect(current, onChange) {
+  const sel = document.createElement("select");
+  sel.className = "select qty"; // reuse look
+  sel.title = "Changer de bloc";
+  sel.setAttribute("aria-label", "Catégorie");
+  // petite largeur
+  sel.style.width = "120px";
+  sel.style.maxWidth = "34vw";
+
+  for (const c of CATEGORY_NAMES) {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    if (c === current) opt.selected = true;
+    sel.appendChild(opt);
+  }
+
+  sel.addEventListener("change", () => onChange(sel.value));
+  return sel;
 }
 
 function render() {
@@ -405,6 +439,13 @@ function render() {
         qty.appendChild(opt);
       }
 
+      // ✅ catégorie editable
+      const catSel = makeCategorySelect(it.category || "Divers", (newCat) => {
+        it.category = sanitizeCategory(newCat);
+        saveState(state);
+        render();
+      });
+
       const del = document.createElement("button");
       del.className = "delete";
       del.textContent = "🗑️";
@@ -412,6 +453,7 @@ function render() {
 
       controls.appendChild(price);
       controls.appendChild(qty);
+      controls.appendChild(catSel);
       controls.appendChild(del);
 
       li.appendChild(handle);
@@ -475,7 +517,7 @@ function reorderWithinCategory(category, orderedIds) {
 
   const byCat = new Map();
   for (const it of [...keep, ...newCat]) {
-    const c = it.category || "Divers";
+    const c = sanitizeCategory(it.category);
     if (!byCat.has(c)) byCat.set(c, []);
     byCat.get(c).push(it);
   }
@@ -615,10 +657,42 @@ if (els.searchInput) {
   });
 }
 
-// ------------------ Add item ------------------
+// ------------------ Add item (✅ avec catégorie) ------------------
+function ensureAddCategorySelect() {
+  if (!els.addRow) return null;
+  // On insère un select juste après addName si pas déjà présent
+  let sel = document.getElementById("addCategory");
+  if (sel) return sel;
+
+  sel = document.createElement("select");
+  sel.id = "addCategory";
+  sel.className = "select";
+  sel.title = "Bloc";
+  sel.setAttribute("aria-label", "Bloc");
+  sel.style.minWidth = "160px";
+
+  for (const c of CATEGORY_NAMES) {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    sel.appendChild(opt);
+  }
+  sel.value = "Divers";
+
+  // insert after addName
+  const addNameEl = els.addName;
+  if (addNameEl && addNameEl.parentElement) {
+    addNameEl.insertAdjacentElement("afterend", sel);
+  } else {
+    els.addRow.appendChild(sel);
+  }
+  return sel;
+}
+
 function openAdd() {
   if (!els.addRow) return;
   els.addRow.hidden = false;
+  ensureAddCategorySelect();
   if (els.addName) { els.addName.value = ""; els.addName.focus(); }
 }
 function closeAdd() {
@@ -637,13 +711,87 @@ els.btnAddCancel?.addEventListener("click", (e) => {
   closeAdd();
 });
 
+function findItemBest(name) {
+  const q = (name || "").toString().trim();
+  if (!q) return null;
+
+  // 1) exact norm
+  const qn = norm(q);
+  let hit = state.items.find((it) => norm(it.name) === qn);
+  if (hit) return hit;
+
+  // 2) includes either way
+  hit = state.items.find((it) => {
+    const n = norm(it.name);
+    return n.includes(qn) || qn.includes(n);
+  });
+  if (hit) return hit;
+
+  // 3) token overlap (simple)
+  const qt = norm(q).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  if (!qt.length) return null;
+
+  let best = null;
+  for (const it of state.items) {
+    const itTokens = norm(it.name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+    if (!itTokens.length) continue;
+    let inter = 0;
+    const set = new Set(itTokens);
+    for (const t of qt) if (set.has(t)) inter++;
+    const score = inter / Math.max(1, new Set([...qt, ...itTokens]).size);
+    if (!best || score > best.score) best = { it, score };
+  }
+  if (best && best.score >= 0.55) return best.it;
+  return null;
+}
+
+function insertItemInCategoryOrder(newItem) {
+  // On insère l'item à la fin de sa catégorie, mais en gardant l'ordre global des catégories
+  const cat = sanitizeCategory(newItem.category);
+
+  // split state by categories in global order
+  const byCat = new Map();
+  for (const c of CATEGORY_NAMES) byCat.set(c, []);
+  const unknown = [];
+
+  for (const it of state.items) {
+    const c = sanitizeCategory(it.category);
+    if (byCat.has(c)) byCat.get(c).push(it);
+    else unknown.push(it);
+  }
+
+  byCat.get(cat).push(newItem);
+
+  const rebuilt = [];
+  for (const c of CATEGORY_NAMES) rebuilt.push(...(byCat.get(c) || []));
+  rebuilt.push(...unknown);
+
+  state.items = rebuilt;
+}
+
 els.btnAddConfirm?.addEventListener("click", (e) => {
   e.preventDefault();
   const name = (els.addName?.value || "").trim();
   if (!name) return;
 
-  const id = `item_${slugify("Divers")}_${Date.now().toString(36)}_${slugify(name)}`;
-  state.items.push({ id, name, category: "Divers", checked: false, qty: 1, price: "" });
+  const catSel = ensureAddCategorySelect();
+  const category = sanitizeCategory(catSel?.value || "Divers");
+
+  // si existe déjà, on le coche juste
+  const exists = findItemBest(name);
+  if (exists) {
+    exists.checked = true;
+    saveState(state);
+    closeAdd();
+    render();
+    computeTotal();
+    return;
+  }
+
+  const id = `item_${slugify(category)}_${Date.now().toString(36)}_${slugify(name)}`;
+  const item = { id, name, category, checked: true, qty: 1, price: "" };
+
+  insertItemInCategoryOrder(item);
 
   saveState(state);
   closeAdd();
@@ -703,7 +851,9 @@ function getCheckedSummary() {
     name: it.name,
     checked: !!it.checked,
     qty: Number(it.qty) || 1,
-    price: parsePrice(it.price)
+    price: parsePrice(it.price),
+    // ✅ on passe la catégorie au worker (utile pour matching + suggestions)
+    category: sanitizeCategory(it.category)
   }));
 
   return { checked, all };
@@ -722,7 +872,9 @@ async function callAI(kind, prompt, extra = {}) {
     budget: extra.budget ?? null,
     goal: extra.goal ?? null,
     state: getCheckedSummary(),
-    locale: "fr-FR"
+    locale: "fr-FR",
+    // ✅ envoie les catégories autorisées (si ton worker v2 les utilise)
+    categories: CATEGORY_NAMES
   };
 
   const res = await fetch(endpoint, {
@@ -874,13 +1026,10 @@ function renderAiBudget(out) {
     return;
   }
 
-  // On essaie de reconnaître des structures "classiques"
   const message = (out.message || out.summary || out.note || out.text || "").toString().trim();
-
   const meals = pickArray(out, ["meals", "plan", "menu", "week", "week_plan"]) || [];
   const shopping = pickArray(out, ["shopping_list", "groceries", "to_buy", "items", "missing_items"]) || [];
   const tips = pickArray(out, ["tips", "notes", "advices"]) || [];
-
   const est = out.estimated_total ?? out.estimated_cost ?? out.total ?? null;
 
   let html = "";
@@ -903,28 +1052,20 @@ function renderAiBudget(out) {
     `;
   }
 
-  // Menu semaine
   if (meals.length) {
     const cardParts = [];
     for (const m of meals) {
       if (!m) continue;
-      // m peut être string ou objet
-      if (typeof m === "string") {
-        cardParts.push(`<li>${escapeHtml(m)}</li>`);
-        continue;
-      }
+      if (typeof m === "string") { cardParts.push(`<li>${escapeHtml(m)}</li>`); continue; }
       const day = (m.day || m.jour || m.date || "").toString().trim();
       const title = (m.title || m.name || m.meal || m.repas || "").toString().trim();
       const lines = [];
-
       const breakfast = (m.breakfast || m.petit_dej || m.petitdej || "").toString().trim();
       const lunch = (m.lunch || m.dejeuner || m.midi || "").toString().trim();
       const dinner = (m.dinner || m.diner || m.soir || "").toString().trim();
-
       if (breakfast) lines.push(`🥣 ${breakfast}`);
       if (lunch) lines.push(`🍽️ ${lunch}`);
       if (dinner) lines.push(`🌙 ${dinner}`);
-
       const head = [day, title].filter(Boolean).join(" — ");
       if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" • "))}` : ""}</li>`);
       else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" • "))}</li>`);
@@ -942,7 +1083,6 @@ function renderAiBudget(out) {
     }
   }
 
-  // Liste de courses
   const shopClean = uniqStrings(shopping.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
   if (shopClean.length) {
     html += `
@@ -968,7 +1108,6 @@ function renderAiBudget(out) {
     `;
   }
 
-  // Fallback si le backend renvoie un format inattendu
   if (!html) {
     html = `
       <div class="ai-card">
@@ -1050,32 +1189,54 @@ els.btnClearAiBudget?.addEventListener("click", () => {
   if (els.btnApplyAiBudget) els.btnApplyAiBudget.disabled = true;
 });
 
-// Apply recipes actions
-els.btnApplyAi?.addEventListener("click", () => {
-  const out = lastAiPayload;
-  if (!out || !Array.isArray(out.actions)) return;
+// ✅ Appliquer actions (mutualisé)
+function applyAiActions(out) {
+  if (!out || !Array.isArray(out.actions)) return false;
 
   let changed = false;
 
   for (const a of out.actions) {
     if (!a || typeof a !== "object") continue;
-    const type = a.type;
-    const name = (a.name || "").toString().trim();
-    if (!name) continue;
 
-    const findByName = () => state.items.find((it) => norm(it.name) === norm(name));
+    const type = String(a.type || "").trim();
+    const rawName = (a.name || "").toString().trim();
+    if (!type || !rawName) continue;
+
+    const it = findItemBest(rawName);
+    const suggestedCategory = sanitizeCategory(a.category || "Divers");
 
     if (type === "check") {
-      const it = findByName();
-      if (it) { it.checked = a.checked !== false; changed = true; }
+      if (it) {
+        it.checked = a.checked !== false;
+        changed = true;
+      }
     } else if (type === "set_qty") {
-      const it = findByName();
-      if (it) { it.qty = clamp(Number(a.qty) || 1, 1, 999); changed = true; }
+      if (it) {
+        it.qty = clamp(Number(a.qty) || 1, 1, 999);
+        changed = true;
+      }
     } else if (type === "add_item") {
-      const exists = findByName();
-      if (!exists) {
-        const id = `item_${slugify("Divers")}_${Date.now().toString(36)}_${slugify(name)}`;
-        state.items.push({ id, name, category: "Divers", checked: true, qty: clamp(Number(a.qty) || 1, 1, 999), price: "" });
+      if (it) {
+        // existe déjà => on coche + qty
+        it.checked = true;
+        const q = clamp(Number(a.qty) || 1, 1, 999);
+        if (q > 1) it.qty = q;
+        // si IA propose une meilleure catégorie, on l’applique (optionnel mais utile)
+        if (suggestedCategory && it.category !== suggestedCategory) it.category = suggestedCategory;
+        changed = true;
+      } else {
+        const name = rawName;
+        const category = suggestedCategory || "Divers";
+        const id = `item_${slugify(category)}_${Date.now().toString(36)}_${slugify(name)}`;
+        const newItem = {
+          id,
+          name,
+          category,
+          checked: true,
+          qty: clamp(Number(a.qty) || 1, 1, 999),
+          price: ""
+        };
+        insertItemInCategoryOrder(newItem);
         changed = true;
       }
     }
@@ -1084,6 +1245,15 @@ els.btnApplyAi?.addEventListener("click", () => {
   if (changed) {
     saveState(state);
     render();
+    computeTotal();
+  }
+  return changed;
+}
+
+// Apply recipes actions
+els.btnApplyAi?.addEventListener("click", () => {
+  const ok = applyAiActions(lastAiPayload);
+  if (ok) {
     alert("OK — actions appliquées ✅");
     setActiveTab("list");
   } else {
@@ -1091,40 +1261,10 @@ els.btnApplyAi?.addEventListener("click", () => {
   }
 });
 
-// Apply budget actions (même logique)
+// Apply budget actions
 els.btnApplyAiBudget?.addEventListener("click", () => {
-  const out = lastAiPayload;
-  if (!out || !Array.isArray(out.actions)) return;
-
-  let changed = false;
-
-  for (const a of out.actions) {
-    if (!a || typeof a !== "object") continue;
-    const type = a.type;
-    const name = (a.name || "").toString().trim();
-    if (!name) continue;
-
-    const findByName = () => state.items.find((it) => norm(it.name) === norm(name));
-
-    if (type === "check") {
-      const it = findByName();
-      if (it) { it.checked = a.checked !== false; changed = true; }
-    } else if (type === "set_qty") {
-      const it = findByName();
-      if (it) { it.qty = clamp(Number(a.qty) || 1, 1, 999); changed = true; }
-    } else if (type === "add_item") {
-      const exists = findByName();
-      if (!exists) {
-        const id = `item_${slugify("Divers")}_${Date.now().toString(36)}_${slugify(name)}`;
-        state.items.push({ id, name, category: "Divers", checked: true, qty: clamp(Number(a.qty) || 1, 1, 999), price: "" });
-        changed = true;
-      }
-    }
-  }
-
-  if (changed) {
-    saveState(state);
-    render();
+  const ok = applyAiActions(lastAiPayload);
+  if (ok) {
     alert("OK — actions appliquées ✅");
     setActiveTab("list");
   } else {
@@ -1149,4 +1289,3 @@ if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
 if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
   els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
 }
-

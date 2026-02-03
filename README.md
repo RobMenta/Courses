@@ -10,7 +10,7 @@ Cette web app te permet :
 - 🧠 modules IA (recettes + budget) via un backend (Worker), **sans jamais exposer ta clé API côté client**
 
 ---
- 
+  
 ## 1) Mise en ligne sur GitHub Pages
 
 1. Crée un nouveau repo GitHub (ex: `ma-liste-de-course`)

@@ -114,8 +114,8 @@
         <div class="ai-output">
           <div class="ai-output__title">📌 Résultat</div>
 
-          <!-- ✅ CHANGEMENT MINIMAL : pre -> div pour afficher un rendu HTML propre -->
-          <div class="ai-render" id="aiOutRecipes">—</div>
+          <!-- ✅ déjà en rendu HTML -->
+          <div class="ai-render" id="aiOutRecipes"><div class="ai-render__empty">—</div></div>
 
           <div class="ai-output__actions">
             <button class="btn" id="btnApplyAi" disabled>✅ Appliquer à ma liste</button>
@@ -159,7 +159,9 @@
 
         <div class="ai-output">
           <div class="ai-output__title">📌 Résultat</div>
-          <pre class="pre" id="aiOutBudget">—</pre>
+
+          <!-- ✅ MODIF ICI: plus de JSON brut -->
+          <div class="ai-render" id="aiOutBudget"><div class="ai-render__empty">—</div></div>
 
           <div class="ai-output__actions">
             <button class="btn" id="btnApplyAiBudget" disabled>✅ Appliquer à ma liste</button>
@@ -195,13 +197,9 @@
 
   </main>
 
-  <!-- Script -->
   <script src="./app.js?v=1"></script>
 </body>
 </html>
 
-
-  <!-- App -->
-  <script src="./app.js?v=1" defer></script>
 </body>
 </html>

@@ -533,3 +533,99 @@ body{
 .toggle.is-on .toggle__thumb{
   transform: translateX(18px);
 }
+
+/* ===================================================================== */
+/* ✅ Nouveau rendu “Recettes → Liste” (remplace le JSON brut)            */
+/*  - Ne touche pas aux styles existants (.pre reste pour Budget)         */
+/* ===================================================================== */
+.ai-render{
+  margin:0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: rgba(0,0,0,.18);
+  max-height: 420px;
+  overflow:auto;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ai-render__empty{
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ai-card{
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(15,23,35,.78), rgba(12,19,30,.70));
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,.20);
+  margin-bottom: 10px;
+}
+
+.ai-card__title{
+  font-weight: 1000;
+  font-size: 15px;
+  margin: 0 0 6px 0;
+  letter-spacing: .2px;
+}
+
+.ai-tags{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin: 6px 0 8px 0;
+}
+
+.ai-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.06);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.ai-card__why{
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.ai-subtitle{
+  margin-top: 10px;
+  font-weight: 1000;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ai-list{
+  margin: 8px 0 0 0;
+  padding-left: 18px;
+  color: var(--text);
+}
+.ai-list li{margin: 4px 0}
+
+.ai-callout{
+  border: 1px solid rgba(83,208,255,.25);
+  background: rgba(83,208,255,.10);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.ai-callout__title{
+  font-weight: 1000;
+  margin-bottom: 4px;
+}
+.ai-callout__text{
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}

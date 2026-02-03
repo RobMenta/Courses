@@ -817,7 +817,7 @@ els.btnSaveSettings?.addEventListener("click", () => {
   render(); // pour rafraîchir les quantités max
 });
 
-// ------------------ AI (inchangé) ------------------
+// ------------------ AI (recettes: rendu joli, budget: JSON) ------------------
 function getCheckedSummary() {
   const checked = state.items.filter((it) => it.checked).map((it) => ({
     name: it.name,
@@ -870,6 +870,173 @@ function pretty(obj) {
   catch { return String(obj); }
 }
 
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function pickArray(obj, keys) {
+  for (const k of keys) {
+    const v = obj?.[k];
+    if (Array.isArray(v)) return v;
+  }
+  return null;
+}
+
+function uniqStrings(arr) {
+  const out = [];
+  const seen = new Set();
+  for (const x of arr || []) {
+    const s = (x ?? "").toString().trim();
+    if (!s) continue;
+    const key = norm(s);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(s);
+  }
+  return out;
+}
+
+/**
+ * Rendu HTML "propre" pour Recettes → Liste
+ * On accepte plusieurs formats possibles côté backend, pour être robuste :
+ * - out.recipes (array)
+ * - out.suggestions (array)
+ * - out.ideas (array)
+ * Chaque recette peut être:
+ *   { title/name, time_min/time, difficulty, why, steps[], ingredients[], missing_items[] }
+ * Et on cherche aussi des manquants globaux:
+ * - out.missing_items / out.missing / out.to_buy
+ */
+function renderAiRecipes(out) {
+  if (!els.aiOutRecipes) return;
+
+  if (!out) {
+    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
+    return;
+  }
+
+  // candidates
+  const recipes = pickArray(out, ["recipes", "suggestions", "ideas"]) || [];
+  const globalMissing =
+    pickArray(out, ["missing_items", "missing", "to_buy", "buy", "shopping_list"]) || [];
+
+  const message =
+    (out.message || out.summary || out.note || out.text || "").toString().trim();
+
+  // Build HTML
+  let html = "";
+
+  if (message) {
+    html += `
+      <div class="ai-callout">
+        <div class="ai-callout__title">🧠 Résumé</div>
+        <div class="ai-callout__text">${escapeHtml(message)}</div>
+      </div>
+    `;
+  }
+
+  const cards = [];
+
+  for (const r of recipes) {
+    if (!r || typeof r !== "object") continue;
+
+    const title =
+      (r.title || r.name || r.recipe || "").toString().trim() || "Recette";
+
+    const time =
+      (r.time_min ?? r.time ?? r.duration ?? r.minutes ?? "").toString().trim();
+
+    const difficulty =
+      (r.difficulty || r.level || r.niveau || "").toString().trim();
+
+    const why =
+      (r.why || r.reason || r.pitch || r.description || "").toString().trim();
+
+    const ingredients = pickArray(r, ["ingredients", "items", "list"]) || [];
+    const steps = pickArray(r, ["steps", "instructions"]) || [];
+    const missing = pickArray(r, ["missing_items", "missing", "to_buy"]) || [];
+
+    const tags = [];
+    if (time) tags.push(`⏱️ ${time}`);
+    if (difficulty) tags.push(`😌 ${difficulty}`);
+
+    let card = `<div class="ai-card">`;
+    card += `<div class="ai-card__title">🍳 ${escapeHtml(title)}</div>`;
+
+    if (tags.length) {
+      card += `<div class="ai-tags">`;
+      for (const t of tags) card += `<span class="ai-tag">${escapeHtml(t)}</span>`;
+      card += `</div>`;
+    }
+
+    const ingClean = uniqStrings(
+      ingredients.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? "")))
+    );
+    const stepsClean = uniqStrings(steps.map((x) => (typeof x === "string" ? x : (x?.text ?? ""))));
+    const missingClean = uniqStrings(
+      missing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? "")))
+    );
+
+    if (ingClean.length) {
+      card += `<div class="ai-subtitle">🧾 Ingrédients</div>`;
+      card += `<ul class="ai-list">`;
+      for (const it of ingClean) card += `<li>${escapeHtml(it)}</li>`;
+      card += `</ul>`;
+    }
+
+    if (missingClean.length) {
+      card += `<div class="ai-subtitle">🛍️ À acheter (manquants)</div>`;
+      card += `<ul class="ai-list">`;
+      for (const it of missingClean) card += `<li>${escapeHtml(it)}</li>`;
+      card += `</ul>`;
+    }
+
+    if (stepsClean.length) {
+      card += `<div class="ai-subtitle">👨‍🍳 Étapes</div>`;
+      card += `<ul class="ai-list">`;
+      for (const st of stepsClean) card += `<li>${escapeHtml(st)}</li>`;
+      card += `</ul>`;
+    }
+
+    if (why) {
+      card += `<div class="ai-card__why">${escapeHtml(why)}</div>`;
+    }
+
+    card += `</div>`;
+    cards.push(card);
+  }
+
+  if (cards.length) {
+    html += cards.join("");
+  } else {
+    // fallback: si le backend renvoie autre chose, on reste lisible
+    html += `<div class="ai-render__empty">Aucune recette lisible trouvée. (Le bouton “Appliquer” peut quand même fonctionner si des actions existent.)</div>`;
+  }
+
+  const globalMissingClean = uniqStrings(
+    globalMissing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? "")))
+  );
+
+  if (globalMissingClean.length) {
+    html += `
+      <div class="ai-card">
+        <div class="ai-card__title">🛒 Achats proposés</div>
+        <div class="ai-subtitle">Liste globale (si tu veux compléter)</div>
+        <ul class="ai-list">
+          ${globalMissingClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
+
+  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">—</div>`;
+}
+
 document.querySelectorAll("[data-ai]").forEach((btn) => {
   btn.addEventListener("click", async () => {
     const kind = btn.getAttribute("data-ai");
@@ -881,7 +1048,10 @@ document.querySelectorAll("[data-ai]").forEach((btn) => {
         const out = await callAI(kind, prompt);
         if (!out) return;
         lastAiPayload = out;
-        if (els.aiOutRecipes) els.aiOutRecipes.textContent = pretty(out);
+
+        // ✅ joli rendu
+        renderAiRecipes(out);
+
         if (els.btnApplyAi) els.btnApplyAi.disabled = !out?.actions;
         setActiveTab("recipes");
       } else if (kind === "weekly_plan") {
@@ -891,14 +1061,20 @@ document.querySelectorAll("[data-ai]").forEach((btn) => {
         const out = await callAI(kind, prompt, { budget, goal });
         if (!out) return;
         lastAiPayload = out;
+
+        // Budget reste en JSON (préservé)
         if (els.aiOutBudget) els.aiOutBudget.textContent = pretty(out);
+
         if (els.btnApplyAi) els.btnApplyAi.disabled = !out?.actions;
         setActiveTab("budget");
       } else {
         const out = await callAI(kind, "");
         if (!out) return;
         lastAiPayload = out;
-        if (els.aiOutRecipes) els.aiOutRecipes.textContent = pretty(out);
+
+        // ✅ joli rendu (suggestions)
+        renderAiRecipes(out);
+
         if (els.btnApplyAi) els.btnApplyAi.disabled = !out?.actions;
         setActiveTab("recipes");
       }
@@ -913,7 +1089,10 @@ document.querySelectorAll("[data-ai]").forEach((btn) => {
 els.btnClearAi.forEach((b) => {
   b.addEventListener("click", () => {
     lastAiPayload = null;
-    if (els.aiOutRecipes) els.aiOutRecipes.textContent = "—";
+    if (els.aiOutRecipes) {
+      // ✅ reset compatible div
+      els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
+    }
     if (els.aiOutBudget) els.aiOutBudget.textContent = "—";
     if (els.btnApplyAi) els.btnApplyAi.disabled = true;
   });
@@ -976,3 +1155,8 @@ if ("serviceWorker" in navigator) {
 // init
 setActiveTab("list");
 render();
+
+// petit init de l’affichage recettes si jamais tu avais encore le “—”
+if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
+  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
+}

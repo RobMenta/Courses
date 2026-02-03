@@ -6,7 +6,7 @@
 // - purge des anciens caches à l’activate
 // - skipWaiting + clients.claim
 
-const VERSION = "v11"; // <- 🔥 incrémente quand tu modifies app.js / styles / index etc.
+const VERSION = "v12"; // <- 🔥 incrémente quand tu modifies app.js / styles / index etc.
 const CACHE_PREFIX = "courses-pwa-";
 const CACHE_NAME = `${CACHE_PREFIX}${VERSION}`;
 

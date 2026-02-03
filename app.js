@@ -322,10 +322,10 @@ function itemsByCategory() {
 
 function makeCategorySelect(current, onChange) {
   const sel = document.createElement("select");
-  sel.className = "select qty"; // reuse look
+  // ✅ IMPORTANT: NE PAS utiliser la classe .qty ici (elle impose une largeur fixe)
+  sel.className = "select";
   sel.title = "Changer de bloc";
   sel.setAttribute("aria-label", "Catégorie");
-  // petite largeur
   sel.style.width = "120px";
   sel.style.maxWidth = "34vw";
 
@@ -443,7 +443,9 @@ function render() {
       const catSel = makeCategorySelect(it.category || "Divers", (newCat) => {
         it.category = sanitizeCategory(newCat);
         saveState(state);
+        // ✅ IMPORTANT : si tu changes de catégorie pendant une recherche, on veut refresh sans perdre le filtre
         render();
+        computeTotal();
       });
 
       const del = document.createElement("button");
@@ -504,7 +506,7 @@ function reorderWithinCategory(category, orderedIds) {
   const moved = new Map();
 
   for (const it of state.items) {
-    if (it.category === category) moved.set(it.id, it);
+    if (sanitizeCategory(it.category) === category) moved.set(it.id, it);
     else keep.push(it);
   }
 
@@ -631,7 +633,7 @@ function setupDrag(handleEl, itemEl, listEl, category, isSearchActive) {
     e.preventDefault();
 
     const id = itemEl.dataset.id;
-    const catItems = state.items.filter((it) => it.category === category);
+    const catItems = state.items.filter((it) => sanitizeCategory(it.category) === category);
     const idx = catItems.findIndex((it) => it.id === id);
     if (idx < 0) return;
 
@@ -660,7 +662,9 @@ if (els.searchInput) {
 // ------------------ Add item (✅ avec catégorie) ------------------
 function ensureAddCategorySelect() {
   if (!els.addRow) return null;
-  // On insère un select juste après addName si pas déjà présent
+
+  // ✅ CORRECTIF: ton addRow est un <form id="addRow">, donc il faut viser le formulaire (els.addRow),
+  // pas le wrapper .add-row
   let sel = document.getElementById("addCategory");
   if (sel) return sel;
 
@@ -679,7 +683,7 @@ function ensureAddCategorySelect() {
   }
   sel.value = "Divers";
 
-  // insert after addName
+  // insert after addName (dans le form)
   const addNameEl = els.addName;
   if (addNameEl && addNameEl.parentElement) {
     addNameEl.insertAdjacentElement("afterend", sel);
@@ -746,10 +750,8 @@ function findItemBest(name) {
 }
 
 function insertItemInCategoryOrder(newItem) {
-  // On insère l'item à la fin de sa catégorie, mais en gardant l'ordre global des catégories
   const cat = sanitizeCategory(newItem.category);
 
-  // split state by categories in global order
   const byCat = new Map();
   for (const c of CATEGORY_NAMES) byCat.set(c, []);
   const unknown = [];
@@ -777,10 +779,11 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
   const catSel = ensureAddCategorySelect();
   const category = sanitizeCategory(catSel?.value || "Divers");
 
-  // si existe déjà, on le coche juste
   const exists = findItemBest(name);
   if (exists) {
     exists.checked = true;
+    // ✅ si l'utilisateur choisit un bloc différent lors de l'ajout, on le respecte
+    if (category && sanitizeCategory(exists.category) !== category) exists.category = category;
     saveState(state);
     closeAdd();
     render();
@@ -796,7 +799,16 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
   saveState(state);
   closeAdd();
   render();
+  computeTotal();
 });
+
+// ✅ BONUS: si l'utilisateur valide le form (Enter), on route sur le même handler
+if (els.addRow) {
+  els.addRow.addEventListener("submit", (e) => {
+    e.preventDefault();
+    els.btnAddConfirm?.click();
+  });
+}
 
 // ------------------ Bulk actions ------------------
 els.btnUncheckAll?.addEventListener("click", () => {
@@ -852,7 +864,6 @@ function getCheckedSummary() {
     checked: !!it.checked,
     qty: Number(it.qty) || 1,
     price: parsePrice(it.price),
-    // ✅ on passe la catégorie au worker (utile pour matching + suggestions)
     category: sanitizeCategory(it.category)
   }));
 
@@ -873,7 +884,6 @@ async function callAI(kind, prompt, extra = {}) {
     goal: extra.goal ?? null,
     state: getCheckedSummary(),
     locale: "fr-FR",
-    // ✅ envoie les catégories autorisées (si ton worker v2 les utilise)
     categories: CATEGORY_NAMES
   };
 
@@ -964,9 +974,35 @@ function renderAiRecipes(out) {
     if (time) tags.push(`⏱️ ${time}`);
     if (difficulty) tags.push(`😌 ${difficulty}`);
 
-    const ingClean = uniqStrings(ingredients.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
+    // ✅ Support quantité si objet {name, qty, note/unit}
+    const ingLines = [];
+    for (const x of ingredients) {
+      if (typeof x === "string") { ingLines.push(x); continue; }
+      if (!x || typeof x !== "object") continue;
+      const n = (x.name ?? x.item ?? "").toString().trim();
+      if (!n) continue;
+      const q = (x.qty ?? x.quantity ?? "").toString().trim();
+      const u = (x.unit ?? x.note ?? "").toString().trim();
+      const line = [q ? `${q}` : "", u ? `${u}` : "", n].filter(Boolean).join(" ");
+      ingLines.push(line);
+    }
+
     const stepsClean = uniqStrings(steps.map((x) => (typeof x === "string" ? x : (x?.text ?? ""))));
-    const missingClean = uniqStrings(missing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
+
+    const missingLines = [];
+    for (const x of missing) {
+      if (typeof x === "string") { missingLines.push(x); continue; }
+      if (!x || typeof x !== "object") continue;
+      const n = (x.name ?? x.item ?? "").toString().trim();
+      if (!n) continue;
+      const q = (x.qty ?? x.quantity ?? "").toString().trim();
+      const u = (x.unit ?? x.note ?? "").toString().trim();
+      const line = [q ? `${q}` : "", u ? `${u}` : "", n].filter(Boolean).join(" ");
+      missingLines.push(line);
+    }
+
+    const ingClean = uniqStrings(ingLines);
+    const missingClean = uniqStrings(missingLines);
 
     let card = `<div class="ai-card">`;
     card += `<div class="ai-card__title">🍳 ${escapeHtml(title)}</div>`;
@@ -1001,7 +1037,18 @@ function renderAiRecipes(out) {
   if (cards.length) html += cards.join("");
   else html += `<div class="ai-render__empty">Aucune recette lisible trouvée. (Le bouton “Appliquer” peut quand même fonctionner si des actions existent.)</div>`;
 
-  const globalMissingClean = uniqStrings(globalMissing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
+  const globalMissingLines = [];
+  for (const x of globalMissing) {
+    if (typeof x === "string") { globalMissingLines.push(x); continue; }
+    if (!x || typeof x !== "object") continue;
+    const n = (x.name ?? x.item ?? "").toString().trim();
+    if (!n) continue;
+    const q = (x.qty ?? x.quantity ?? "").toString().trim();
+    const u = (x.unit ?? x.note ?? "").toString().trim();
+    globalMissingLines.push([q ? `${q}` : "", u ? `${u}` : "", n].filter(Boolean).join(" "));
+  }
+  const globalMissingClean = uniqStrings(globalMissingLines);
+
   if (globalMissingClean.length) {
     html += `
       <div class="ai-card">
@@ -1083,7 +1130,19 @@ function renderAiBudget(out) {
     }
   }
 
-  const shopClean = uniqStrings(shopping.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
+  // ✅ Support quantité sur la shopping list
+  const shopLines = [];
+  for (const x of shopping) {
+    if (typeof x === "string") { shopLines.push(x); continue; }
+    if (!x || typeof x !== "object") continue;
+    const n = (x.name ?? x.item ?? "").toString().trim();
+    if (!n) continue;
+    const q = (x.qty ?? x.quantity ?? "").toString().trim();
+    const u = (x.unit ?? x.note ?? "").toString().trim();
+    shopLines.push([q ? `${q}` : "", u ? `${u}` : "", n].filter(Boolean).join(" "));
+  }
+  const shopClean = uniqStrings(shopLines);
+
   if (shopClean.length) {
     html += `
       <div class="ai-card">
@@ -1217,12 +1276,15 @@ function applyAiActions(out) {
       }
     } else if (type === "add_item") {
       if (it) {
-        // existe déjà => on coche + qty
         it.checked = true;
         const q = clamp(Number(a.qty) || 1, 1, 999);
         if (q > 1) it.qty = q;
-        // si IA propose une meilleure catégorie, on l’applique (optionnel mais utile)
-        if (suggestedCategory && it.category !== suggestedCategory) it.category = suggestedCategory;
+
+        // ✅ si IA donne une catégorie, on l'applique
+        if (suggestedCategory && sanitizeCategory(it.category) !== suggestedCategory) {
+          it.category = suggestedCategory;
+        }
+
         changed = true;
       } else {
         const name = rawName;

@@ -113,7 +113,9 @@
 
         <div class="ai-output">
           <div class="ai-output__title">📌 Résultat</div>
-          <pre class="pre" id="aiOutRecipes">—</pre>
+
+          <!-- ✅ CHANGEMENT MINIMAL : pre -> div pour afficher un rendu HTML propre -->
+          <div class="ai-render" id="aiOutRecipes">—</div>
 
           <div class="ai-output__actions">
             <button class="btn" id="btnApplyAi" disabled>✅ Appliquer à ma liste</button>
@@ -192,6 +194,12 @@
     </dialog>
 
   </main>
+
+  <!-- Script -->
+  <script src="./app.js?v=1"></script>
+</body>
+</html>
+
 
   <!-- App -->
   <script src="./app.js?v=1" defer></script>

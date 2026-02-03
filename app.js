@@ -20,154 +20,48 @@ const DEFAULT_SETTINGS = {
 
 // ------------------ CATALOG (TES BLOCS + TON ORDRE) ------------------
 const CATEGORIES = [
-  {
-    name: "Divers",
-    items: ["Tupperwear", "Lingette voiture", "Tableaux", "Débardeur blanc"]
-  },
+  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "Débardeur blanc"] },
   {
     name: "Soins",
     items: [
-      "Shampoing",
-      "Après Shampoing",
-      "Laque",
-      "Deo",
-      "Crème hyd",
-      "Masque visage",
-      "Gel douche",
-      "Coton tige",
-      "Bain de bouche",
-      "Gratte langue",
-      "Dentifrice",
-      "Brosse à dent",
-      "Mouchoir"
+      "Shampoing","Après Shampoing","Laque","Deo","Crème hyd","Masque visage","Gel douche",
+      "Coton tige","Bain de bouche","Gratte langue","Dentifrice","Brosse à dent","Mouchoir"
     ]
   },
   {
     name: "Entretient 1",
     items: [
-      "Pierre d'argile",
-      "Eau déminéralisée",
-      "Alcool ménagé",
-      "Savon noir",
-      "Acide chlorydrique",
-      "Bicarbonate de soude",
-      "Percarbonate",
-      "Acide citrique",
-      "Cristaux de soude",
-      "Vinaigre ménagé",
-      "Sel d'oseille"
+      "Pierre d'argile","Eau déminéralisée","Alcool ménagé","Savon noir","Acide chlorydrique",
+      "Bicarbonate de soude","Percarbonate","Acide citrique","Cristaux de soude","Vinaigre ménagé","Sel d'oseille"
     ]
   },
   {
     name: "Entretient 2",
     items: [
-      "Éponges",
-      "Lessive",
-      "Destop",
-      "Adoucissant",
-      "Liquide vaisselle",
-      "Pastille lave vaisselle",
-      "Sac poubelle carton",
-      "Sac poubelles (50L)",
-      "Sopalin",
-      "PQ"
+      "Éponges","Lessive","Destop","Adoucissant","Liquide vaisselle","Pastille lave vaisselle",
+      "Sac poubelle carton","Sac poubelles (50L)","Sopalin","PQ"
     ]
   },
-  {
-    name: "Boissons 1",
-    items: ["Lait", "Soft", "Sirop", "Jus"]
-  },
-  {
-    name: "Boissons 2",
-    items: ["Bières", "Vin blanc"]
-  },
-  {
-    name: "Petit dej 1",
-    items: [
-      "Sucre",
-      "Pépite choco",
-      "Agar-agar",
-      "Farine",
-      "Confiture",
-      "Miel",
-      "Compotes à boire",
-      "Cornichon"
-    ]
-  },
-  {
-    name: "Petit dej 2",
-    items: ["Café", "Thé", "Flocon d'avoine", "Barre Céréale"]
-  },
-  {
-    name: "Sucreries",
-    items: ["Bonbons", "Pastille menthe", "Country", "Prince"]
-  },
+  { name: "Boissons 1", items: ["Lait","Soft","Sirop","Jus"] },
+  { name: "Boissons 2", items: ["Bières","Vin blanc"] },
+  { name: "Petit dej 1", items: ["Sucre","Pépite choco","Agar-agar","Farine","Confiture","Miel","Compotes à boire","Cornichon"] },
+  { name: "Petit dej 2", items: ["Café","Thé","Flocon d'avoine","Barre Céréale"] },
+  { name: "Sucreries", items: ["Bonbons","Pastille menthe","Country","Prince"] },
   {
     name: "Sec 1",
-    items: [
-      "Olives",
-      "Huile d'olive",
-      "Moutardes",
-      "Vinaigre balsamique",
-      "Gros sel",
-      "Herbe de provence",
-      "Cub'or",
-      "Piment de cayenne"
-    ]
+    items: ["Olives","Huile d'olive","Moutardes","Vinaigre balsamique","Gros sel","Herbe de provence","Cub'or","Piment de cayenne"]
   },
-  {
-    name: "Boites 1",
-    items: ["Maïs", "Pois chiches"]
-  },
-  {
-    name: "Boites 2",
-    items: ["Thon", "Croûtons", "Riz", "Riz/quinoa pré cuit", "Purée", "Pâtes"]
-  },
-  {
-    name: "Frais 1",
-    items: ["Tranche dinde", "Lardon", "Carottes", "Gnocchi"]
-  },
-  {
-    name: "Frais 2",
-    items: ["Yaourt", "Skyr à boire", "Compotes"]
-  },
-  {
-    name: "Frais 3",
-    items: ["Oeufs", "Fromage"]
-  },
+  { name: "Boites 1", items: ["Maïs","Pois chiches"] },
+  { name: "Boites 2", items: ["Thon","Croûtons","Riz","Riz/quinoa pré cuit","Purée","Pâtes"] },
+  { name: "Frais 1", items: ["Tranche dinde","Lardon","Carottes","Gnocchi"] },
+  { name: "Frais 2", items: ["Yaourt","Skyr à boire","Compotes"] },
+  { name: "Frais 3", items: ["Oeufs","Fromage"] },
   {
     name: "Fruits/légumes",
-    items: [
-      "Endives",
-      "Patate douce",
-      "Tomates",
-      "Avocats",
-      "Concombre",
-      "Poivrons",
-      "Bananes",
-      "Fraises",
-      "Pommes",
-      "Oignons",
-      "Saumon",
-      "Pomme de terre"
-    ]
+    items: ["Endives","Patate douce","Tomates","Avocats","Concombre","Poivrons","Bananes","Fraises","Pommes","Oignons","Saumon","Pomme de terre"]
   },
-  {
-    name: "Viandes",
-    items: ["Saucisses", "Escalope", "Poisson pané", "Cordon bleu"]
-  },
-  {
-    name: "Surgelé",
-    items: [
-      "Poivron surgelé",
-      "Steak",
-      "Poisson",
-      "nuggets",
-      "Poisson pané (surgelé)",
-      "Pomme de terre surgelé",
-      "Glaces"
-    ]
-  }
+  { name: "Viandes", items: ["Saucisses","Escalope","Poisson pané","Cordon bleu"] },
+  { name: "Surgelé", items: ["Poivron surgelé","Steak","Poisson","nuggets","Poisson pané (surgelé)","Pomme de terre surgelé","Glaces"] }
 ];
 
 function norm(s) {
@@ -206,9 +100,7 @@ function buildInitialItems() {
 const INITIAL_STATE = { items: buildInitialItems() };
 
 // ------------------ helpers ------------------
-function clamp(n, a, b) {
-  return Math.max(a, Math.min(b, n));
-}
+function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
 
 function parsePrice(s) {
   if (typeof s !== "string") return 0;
@@ -231,9 +123,7 @@ function loadSettings() {
     if (!raw) return { ...DEFAULT_SETTINGS };
     const s = JSON.parse(raw);
     return { ...DEFAULT_SETTINGS, ...s };
-  } catch {
-    return { ...DEFAULT_SETTINGS };
-  }
+  } catch { return { ...DEFAULT_SETTINGS }; }
 }
 
 function saveSettings(s) {
@@ -264,7 +154,6 @@ function loadState() {
     if (raw) {
       const s = JSON.parse(raw);
       if (s && Array.isArray(s.items)) {
-        // On garde l'ordre stocké, mais on sécurise les champs
         const fallbackMap = new Map(INITIAL_STATE.items.map((x) => [x.id, x]));
         const items = s.items.map((it) => sanitizeItem(it, fallbackMap.get(it.id) || it));
         return { items };
@@ -297,13 +186,12 @@ function loadState() {
         });
 
         const s2 = { items: merged };
-        saveState(s2); // on écrit directement en v2
+        saveState(s2);
         return s2;
       }
     }
   } catch {}
 
-  // default
   return structuredClone(INITIAL_STATE);
 }
 
@@ -344,17 +232,25 @@ const els = {
 
   aiPromptRecipes: document.getElementById("aiPromptRecipes"),
   aiOutRecipes: document.getElementById("aiOutRecipes"),
+
   aiOutBudget: document.getElementById("aiOutBudget"),
   budgetValue: document.getElementById("budgetValue"),
   budgetGoal: document.getElementById("budgetGoal"),
   aiPromptBudget: document.getElementById("aiPromptBudget"),
+
+  // Recettes
   btnApplyAi: document.getElementById("btnApplyAi"),
-  btnClearAi: document.querySelectorAll("#btnClearAi")
+  btnClearAi: document.querySelectorAll("#btnClearAi"),
+
+  // Budget
+  btnApplyAiBudget: document.getElementById("btnApplyAiBudget"),
+  btnClearAiBudget: document.getElementById("btnClearAiBudget")
 };
 
 let settings = loadSettings();
 let state = loadState();
 let lastAiPayload = null;
+let lastAiKind = null;
 let filter = "";
 
 // ------------------ Tabs ------------------
@@ -429,7 +325,6 @@ function render() {
       if (items.length === 0) continue;
     }
 
-    // Section container as <li> inside the main UL
     const sectionLi = document.createElement("li");
     sectionLi.className = "section";
     sectionLi.dataset.category = cat.name;
@@ -470,7 +365,6 @@ function render() {
       handle.setAttribute("aria-label", "Réordonner");
       handle.tabIndex = 0;
 
-      // Toggle switch
       const toggle = document.createElement("button");
       toggle.className = "toggle" + (it.checked ? " is-on" : "");
       toggle.type = "button";
@@ -553,7 +447,6 @@ function render() {
         computeTotal();
       });
 
-      // Drag only if no search filter
       setupDrag(handle, li, inner, cat.name, () => filter.trim() !== "");
     }
   }
@@ -578,10 +471,8 @@ function reorderWithinCategory(category, orderedIds) {
     const it = moved.get(id);
     if (it) newCat.push(it);
   }
-  // in case something is missing
   for (const it of moved.values()) if (!newCat.includes(it)) newCat.push(it);
 
-  // rebuild in global category order (so blocs stay in place)
   const byCat = new Map();
   for (const it of [...keep, ...newCat]) {
     const c = it.category || "Divers";
@@ -594,7 +485,6 @@ function reorderWithinCategory(category, orderedIds) {
     const arr = byCat.get(cat.name) || [];
     for (const it of arr) rebuilt.push(it);
   }
-  // unknown categories at end
   for (const [c, arr] of byCat.entries()) {
     if (!CATEGORIES.some((x) => x.name === c)) rebuilt.push(...arr);
   }
@@ -605,7 +495,7 @@ function reorderWithinCategory(category, orderedIds) {
 
 function setupDrag(handleEl, itemEl, listEl, category, isSearchActive) {
   handleEl.addEventListener("pointerdown", (e) => {
-    if (isSearchActive()) return; // pas de drag en mode recherche
+    if (isSearchActive()) return;
     if (e.button !== undefined && e.button !== 0) return;
     e.preventDefault();
 
@@ -644,7 +534,6 @@ function setupDrag(handleEl, itemEl, listEl, category, isSearchActive) {
     itemEl.style.left = listRect.left + "px";
     itemEl.style.top = y + "px";
 
-    // auto-scroll
     const margin = 80;
     const vh = window.innerHeight;
     if (e.clientY < margin) window.scrollBy({ top: -14, left: 0, behavior: "auto" });
@@ -655,8 +544,6 @@ function setupDrag(handleEl, itemEl, listEl, category, isSearchActive) {
 
     const targetItem = el.closest("li.item");
     if (!targetItem || targetItem === itemEl || targetItem === placeholder) return;
-
-    // must stay inside same list
     if (targetItem.parentElement !== listEl) return;
 
     const targetRect = targetItem.getBoundingClientRect();
@@ -696,7 +583,6 @@ function setupDrag(handleEl, itemEl, listEl, category, isSearchActive) {
   handleEl.addEventListener("pointerup", endDrag);
   handleEl.addEventListener("pointercancel", endDrag);
 
-  // keyboard (Enter=up, Shift+Enter=down) inside category
   handleEl.addEventListener("keydown", (e) => {
     if (isSearchActive()) return;
     if (e.key !== "Enter") return;
@@ -729,14 +615,11 @@ if (els.searchInput) {
   });
 }
 
-// ------------------ Add item (ajout dans Divers par défaut) ------------------
+// ------------------ Add item ------------------
 function openAdd() {
   if (!els.addRow) return;
   els.addRow.hidden = false;
-  if (els.addName) {
-    els.addName.value = "";
-    els.addName.focus();
-  }
+  if (els.addName) { els.addName.value = ""; els.addName.focus(); }
 }
 function closeAdd() {
   if (!els.addRow) return;
@@ -760,14 +643,7 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
   if (!name) return;
 
   const id = `item_${slugify("Divers")}_${Date.now().toString(36)}_${slugify(name)}`;
-  state.items.push({
-    id,
-    name,
-    category: "Divers",
-    checked: false,
-    qty: 1,
-    price: ""
-  });
+  state.items.push({ id, name, category: "Divers", checked: false, qty: 1, price: "" });
 
   saveState(state);
   closeAdd();
@@ -791,8 +667,6 @@ els.btnResetPrices?.addEventListener("click", () => {
 
 els.btnResetAll?.addEventListener("click", () => {
   if (!confirm("Reset complet (ordre, activations, prix, quantités) ?")) return;
-
-  // IMPORTANT: on reset sur la version canonique (tes blocs)
   localStorage.removeItem(STORAGE_KEY);
   state = structuredClone(INITIAL_STATE);
   saveState(state);
@@ -814,10 +688,10 @@ els.btnSaveSettings?.addEventListener("click", () => {
   settings.aiEndpoint = (els.aiEndpoint?.value || "").trim();
   settings.qtyMax = Number(els.qtyMax?.value) || 10;
   saveSettings(settings);
-  render(); // pour rafraîchir les quantités max
+  render();
 });
 
-// ------------------ AI (recettes: rendu joli, budget: JSON) ------------------
+// ------------------ AI helpers ------------------
 function getCheckedSummary() {
   const checked = state.items.filter((it) => it.checked).map((it) => ({
     name: it.name,
@@ -865,11 +739,6 @@ async function callAI(kind, prompt, extra = {}) {
   return await res.json();
 }
 
-function pretty(obj) {
-  try { return JSON.stringify(obj, null, 2); }
-  catch { return String(obj); }
-}
-
 function escapeHtml(s) {
   return String(s ?? "")
     .replaceAll("&", "&amp;")
@@ -901,17 +770,7 @@ function uniqStrings(arr) {
   return out;
 }
 
-/**
- * Rendu HTML "propre" pour Recettes → Liste
- * On accepte plusieurs formats possibles côté backend, pour être robuste :
- * - out.recipes (array)
- * - out.suggestions (array)
- * - out.ideas (array)
- * Chaque recette peut être:
- *   { title/name, time_min/time, difficulty, why, steps[], ingredients[], missing_items[] }
- * Et on cherche aussi des manquants globaux:
- * - out.missing_items / out.missing / out.to_buy
- */
+// ------------------ AI render: Recettes ------------------
 function renderAiRecipes(out) {
   if (!els.aiOutRecipes) return;
 
@@ -920,15 +779,10 @@ function renderAiRecipes(out) {
     return;
   }
 
-  // candidates
   const recipes = pickArray(out, ["recipes", "suggestions", "ideas"]) || [];
-  const globalMissing =
-    pickArray(out, ["missing_items", "missing", "to_buy", "buy", "shopping_list"]) || [];
+  const globalMissing = pickArray(out, ["missing_items", "missing", "to_buy", "buy", "shopping_list"]) || [];
+  const message = (out.message || out.summary || out.note || out.text || "").toString().trim();
 
-  const message =
-    (out.message || out.summary || out.note || out.text || "").toString().trim();
-
-  // Build HTML
   let html = "";
 
   if (message) {
@@ -945,17 +799,10 @@ function renderAiRecipes(out) {
   for (const r of recipes) {
     if (!r || typeof r !== "object") continue;
 
-    const title =
-      (r.title || r.name || r.recipe || "").toString().trim() || "Recette";
-
-    const time =
-      (r.time_min ?? r.time ?? r.duration ?? r.minutes ?? "").toString().trim();
-
-    const difficulty =
-      (r.difficulty || r.level || r.niveau || "").toString().trim();
-
-    const why =
-      (r.why || r.reason || r.pitch || r.description || "").toString().trim();
+    const title = (r.title || r.name || r.recipe || "").toString().trim() || "Recette";
+    const time = (r.time_min ?? r.time ?? r.duration ?? r.minutes ?? "").toString().trim();
+    const difficulty = (r.difficulty || r.level || r.niveau || "").toString().trim();
+    const why = (r.why || r.reason || r.pitch || r.description || "").toString().trim();
 
     const ingredients = pickArray(r, ["ingredients", "items", "list"]) || [];
     const steps = pickArray(r, ["steps", "instructions"]) || [];
@@ -964,6 +811,10 @@ function renderAiRecipes(out) {
     const tags = [];
     if (time) tags.push(`⏱️ ${time}`);
     if (difficulty) tags.push(`😌 ${difficulty}`);
+
+    const ingClean = uniqStrings(ingredients.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
+    const stepsClean = uniqStrings(steps.map((x) => (typeof x === "string" ? x : (x?.text ?? ""))));
+    const missingClean = uniqStrings(missing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
 
     let card = `<div class="ai-card">`;
     card += `<div class="ai-card__title">🍳 ${escapeHtml(title)}</div>`;
@@ -974,59 +825,36 @@ function renderAiRecipes(out) {
       card += `</div>`;
     }
 
-    const ingClean = uniqStrings(
-      ingredients.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? "")))
-    );
-    const stepsClean = uniqStrings(steps.map((x) => (typeof x === "string" ? x : (x?.text ?? ""))));
-    const missingClean = uniqStrings(
-      missing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? "")))
-    );
-
     if (ingClean.length) {
       card += `<div class="ai-subtitle">🧾 Ingrédients</div>`;
-      card += `<ul class="ai-list">`;
-      for (const it of ingClean) card += `<li>${escapeHtml(it)}</li>`;
-      card += `</ul>`;
+      card += `<ul class="ai-list">${ingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (missingClean.length) {
       card += `<div class="ai-subtitle">🛍️ À acheter (manquants)</div>`;
-      card += `<ul class="ai-list">`;
-      for (const it of missingClean) card += `<li>${escapeHtml(it)}</li>`;
-      card += `</ul>`;
+      card += `<ul class="ai-list">${missingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (stepsClean.length) {
       card += `<div class="ai-subtitle">👨‍🍳 Étapes</div>`;
-      card += `<ul class="ai-list">`;
-      for (const st of stepsClean) card += `<li>${escapeHtml(st)}</li>`;
-      card += `</ul>`;
+      card += `<ul class="ai-list">${stepsClean.map((st) => `<li>${escapeHtml(st)}</li>`).join("")}</ul>`;
     }
 
-    if (why) {
-      card += `<div class="ai-card__why">${escapeHtml(why)}</div>`;
-    }
-
+    if (why) card += `<div class="ai-card__why">${escapeHtml(why)}</div>`;
     card += `</div>`;
+
     cards.push(card);
   }
 
-  if (cards.length) {
-    html += cards.join("");
-  } else {
-    // fallback: si le backend renvoie autre chose, on reste lisible
-    html += `<div class="ai-render__empty">Aucune recette lisible trouvée. (Le bouton “Appliquer” peut quand même fonctionner si des actions existent.)</div>`;
-  }
+  if (cards.length) html += cards.join("");
+  else html += `<div class="ai-render__empty">Aucune recette lisible trouvée. (Le bouton “Appliquer” peut quand même fonctionner si des actions existent.)</div>`;
 
-  const globalMissingClean = uniqStrings(
-    globalMissing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? "")))
-  );
-
+  const globalMissingClean = uniqStrings(globalMissing.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
   if (globalMissingClean.length) {
     html += `
       <div class="ai-card">
         <div class="ai-card__title">🛒 Achats proposés</div>
-        <div class="ai-subtitle">Liste globale (si tu veux compléter)</div>
+        <div class="ai-subtitle">Liste globale</div>
         <ul class="ai-list">
           ${globalMissingClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
         </ul>
@@ -1037,6 +865,132 @@ function renderAiRecipes(out) {
   els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">—</div>`;
 }
 
+// ------------------ AI render: Budget ------------------
+function renderAiBudget(out) {
+  if (!els.aiOutBudget) return;
+
+  if (!out) {
+    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
+    return;
+  }
+
+  // On essaie de reconnaître des structures "classiques"
+  const message = (out.message || out.summary || out.note || out.text || "").toString().trim();
+
+  const meals = pickArray(out, ["meals", "plan", "menu", "week", "week_plan"]) || [];
+  const shopping = pickArray(out, ["shopping_list", "groceries", "to_buy", "items", "missing_items"]) || [];
+  const tips = pickArray(out, ["tips", "notes", "advices"]) || [];
+
+  const est = out.estimated_total ?? out.estimated_cost ?? out.total ?? null;
+
+  let html = "";
+
+  if (message) {
+    html += `
+      <div class="ai-callout">
+        <div class="ai-callout__title">📌 Résumé</div>
+        <div class="ai-callout__text">${escapeHtml(message)}</div>
+      </div>
+    `;
+  }
+
+  if (est !== null && est !== undefined && String(est).trim() !== "") {
+    html += `
+      <div class="ai-card">
+        <div class="ai-card__title">🧾 Estimation</div>
+        <div class="ai-card__why">${escapeHtml(String(est))}</div>
+      </div>
+    `;
+  }
+
+  // Menu semaine
+  if (meals.length) {
+    const cardParts = [];
+    for (const m of meals) {
+      if (!m) continue;
+      // m peut être string ou objet
+      if (typeof m === "string") {
+        cardParts.push(`<li>${escapeHtml(m)}</li>`);
+        continue;
+      }
+      const day = (m.day || m.jour || m.date || "").toString().trim();
+      const title = (m.title || m.name || m.meal || m.repas || "").toString().trim();
+      const lines = [];
+
+      const breakfast = (m.breakfast || m.petit_dej || m.petitdej || "").toString().trim();
+      const lunch = (m.lunch || m.dejeuner || m.midi || "").toString().trim();
+      const dinner = (m.dinner || m.diner || m.soir || "").toString().trim();
+
+      if (breakfast) lines.push(`🥣 ${breakfast}`);
+      if (lunch) lines.push(`🍽️ ${lunch}`);
+      if (dinner) lines.push(`🌙 ${dinner}`);
+
+      const head = [day, title].filter(Boolean).join(" — ");
+      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" • "))}` : ""}</li>`);
+      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" • "))}</li>`);
+    }
+
+    if (cardParts.length) {
+      html += `
+        <div class="ai-card">
+          <div class="ai-card__title">📅 Menu semaine</div>
+          <ul class="ai-list">
+            ${cardParts.join("")}
+          </ul>
+        </div>
+      `;
+    }
+  }
+
+  // Liste de courses
+  const shopClean = uniqStrings(shopping.map((x) => (typeof x === "string" ? x : (x?.name ?? x?.item ?? ""))));
+  if (shopClean.length) {
+    html += `
+      <div class="ai-card">
+        <div class="ai-card__title">🛒 Liste de courses</div>
+        <div class="ai-subtitle">Tu peux cliquer “Appliquer” pour cocher/ajouter automatiquement</div>
+        <ul class="ai-list">
+          ${shopClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
+
+  const tipsClean = uniqStrings(tips.map((x) => (typeof x === "string" ? x : (x?.text ?? x?.tip ?? ""))));
+  if (tipsClean.length) {
+    html += `
+      <div class="ai-card">
+        <div class="ai-card__title">💡 Conseils</div>
+        <ul class="ai-list">
+          ${tipsClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
+
+  // Fallback si le backend renvoie un format inattendu
+  if (!html) {
+    html = `
+      <div class="ai-card">
+        <div class="ai-card__title">📌 Résultat</div>
+        <div class="ai-card__why">Format inattendu côté IA — voici la donnée brute :</div>
+        <pre class="pre">${escapeHtml(JSON.stringify(out, null, 2))}</pre>
+      </div>
+    `;
+  }
+
+  els.aiOutBudget.innerHTML = html;
+}
+
+// ------------------ AI actions handlers ------------------
+async function runAi(kind, prompt, extra = {}) {
+  const out = await callAI(kind, prompt, extra);
+  if (!out) return null;
+  lastAiPayload = out;
+  lastAiKind = kind;
+  return out;
+}
+
 document.querySelectorAll("[data-ai]").forEach((btn) => {
   btn.addEventListener("click", async () => {
     const kind = btn.getAttribute("data-ai");
@@ -1045,36 +999,28 @@ document.querySelectorAll("[data-ai]").forEach((btn) => {
     try {
       if (kind === "plan_recipe") {
         const prompt = els.aiPromptRecipes?.value || "";
-        const out = await callAI(kind, prompt);
+        const out = await runAi(kind, prompt);
         if (!out) return;
-        lastAiPayload = out;
 
-        // ✅ joli rendu
         renderAiRecipes(out);
-
         if (els.btnApplyAi) els.btnApplyAi.disabled = !out?.actions;
         setActiveTab("recipes");
       } else if (kind === "weekly_plan") {
         const budget = parsePrice(els.budgetValue?.value || "");
         const goal = els.budgetGoal?.value || "equilibre";
         const prompt = els.aiPromptBudget?.value || "";
-        const out = await callAI(kind, prompt, { budget, goal });
+
+        const out = await runAi(kind, prompt, { budget, goal });
         if (!out) return;
-        lastAiPayload = out;
 
-        // Budget reste en JSON (préservé)
-        if (els.aiOutBudget) els.aiOutBudget.textContent = pretty(out);
-
-        if (els.btnApplyAi) els.btnApplyAi.disabled = !out?.actions;
+        renderAiBudget(out);
+        if (els.btnApplyAiBudget) els.btnApplyAiBudget.disabled = !out?.actions;
         setActiveTab("budget");
       } else {
-        const out = await callAI(kind, "");
+        const out = await runAi(kind, "");
         if (!out) return;
-        lastAiPayload = out;
 
-        // ✅ joli rendu (suggestions)
         renderAiRecipes(out);
-
         if (els.btnApplyAi) els.btnApplyAi.disabled = !out?.actions;
         setActiveTab("recipes");
       }
@@ -1086,18 +1032,25 @@ document.querySelectorAll("[data-ai]").forEach((btn) => {
   });
 });
 
+// Clear recipes
 els.btnClearAi.forEach((b) => {
   b.addEventListener("click", () => {
     lastAiPayload = null;
-    if (els.aiOutRecipes) {
-      // ✅ reset compatible div
-      els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
-    }
-    if (els.aiOutBudget) els.aiOutBudget.textContent = "—";
+    lastAiKind = null;
+    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
     if (els.btnApplyAi) els.btnApplyAi.disabled = true;
   });
 });
 
+// Clear budget
+els.btnClearAiBudget?.addEventListener("click", () => {
+  lastAiPayload = null;
+  lastAiKind = null;
+  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
+  if (els.btnApplyAiBudget) els.btnApplyAiBudget.disabled = true;
+});
+
+// Apply recipes actions
 els.btnApplyAi?.addEventListener("click", () => {
   const out = lastAiPayload;
   if (!out || !Array.isArray(out.actions)) return;
@@ -1122,14 +1075,48 @@ els.btnApplyAi?.addEventListener("click", () => {
       const exists = findByName();
       if (!exists) {
         const id = `item_${slugify("Divers")}_${Date.now().toString(36)}_${slugify(name)}`;
-        state.items.push({
-          id,
-          name,
-          category: "Divers",
-          checked: true,
-          qty: clamp(Number(a.qty) || 1, 1, 999),
-          price: ""
-        });
+        state.items.push({ id, name, category: "Divers", checked: true, qty: clamp(Number(a.qty) || 1, 1, 999), price: "" });
+        changed = true;
+      }
+    }
+  }
+
+  if (changed) {
+    saveState(state);
+    render();
+    alert("OK — actions appliquées ✅");
+    setActiveTab("list");
+  } else {
+    alert("Rien à appliquer (actions non reconnues ou produits introuvables).");
+  }
+});
+
+// Apply budget actions (même logique)
+els.btnApplyAiBudget?.addEventListener("click", () => {
+  const out = lastAiPayload;
+  if (!out || !Array.isArray(out.actions)) return;
+
+  let changed = false;
+
+  for (const a of out.actions) {
+    if (!a || typeof a !== "object") continue;
+    const type = a.type;
+    const name = (a.name || "").toString().trim();
+    if (!name) continue;
+
+    const findByName = () => state.items.find((it) => norm(it.name) === norm(name));
+
+    if (type === "check") {
+      const it = findByName();
+      if (it) { it.checked = a.checked !== false; changed = true; }
+    } else if (type === "set_qty") {
+      const it = findByName();
+      if (it) { it.qty = clamp(Number(a.qty) || 1, 1, 999); changed = true; }
+    } else if (type === "add_item") {
+      const exists = findByName();
+      if (!exists) {
+        const id = `item_${slugify("Divers")}_${Date.now().toString(36)}_${slugify(name)}`;
+        state.items.push({ id, name, category: "Divers", checked: true, qty: clamp(Number(a.qty) || 1, 1, 999), price: "" });
         changed = true;
       }
     }
@@ -1156,7 +1143,10 @@ if ("serviceWorker" in navigator) {
 setActiveTab("list");
 render();
 
-// petit init de l’affichage recettes si jamais tu avais encore le “—”
 if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
   els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
 }
+if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
+  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
+}
+

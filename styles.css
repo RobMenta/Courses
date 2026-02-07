@@ -259,6 +259,7 @@ body{
   display:flex;
   flex-direction:column;
   gap:10px;
+  min-width:0;
 }
 
 .item{
@@ -272,6 +273,7 @@ body{
   box-shadow: 0 14px 30px rgba(0,0,0,.22);
   transition: .12s ease;
   touch-action: pan-y;
+  min-width:0;
 }
 .item:hover{border-color: rgba(83,208,255,.22)}
 .item.is-checked{
@@ -292,6 +294,7 @@ body{
   cursor:grab;
   user-select:none;
   color: rgba(234,241,255,.95);
+  flex: 0 0 auto;
 }
 .handle:active{cursor:grabbing}
 .item.is-dragging{opacity:.95}
@@ -317,10 +320,12 @@ body{
   font-size: 15px;
   line-height:1.15;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .name__sub{
   font-size:12px;
   color: var(--muted);
+  white-space: normal;
 }
 
 .controls{
@@ -347,6 +352,7 @@ body{
   padding: 10px 10px;
   cursor:pointer;
   box-shadow: 0 10px 22px rgba(0,0,0,.16);
+  flex: 0 0 auto;
 }
 .delete:hover{
   border-color: rgba(255,91,107,.35);
@@ -428,11 +434,6 @@ body{
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
-@media (max-width: 520px){
-  .grid2{grid-template-columns:1fr}
-  .price{width:88px}
-  .qty{width:74px}
-}
 
 /* ---------- Dialog ---------- */
 .dialog{
@@ -463,6 +464,7 @@ body{
   border-top: 1px solid var(--stroke);
   margin: 14px 0;
 }
+
 /* ===== Sections / blocs (familles) ===== */
 .section{
   list-style:none;
@@ -472,6 +474,7 @@ body{
   background: rgba(16,27,39,.55);
   border-radius: 16px;
   overflow: hidden;
+  min-width:0;
 }
 .section__header{
   display:flex;
@@ -500,6 +503,7 @@ body{
   display:flex;
   flex-direction:column;
   gap: 8px;
+  min-width:0;
 }
 
 /* ===== Toggle switch ===== */
@@ -535,8 +539,7 @@ body{
 }
 
 /* ===================================================================== */
-/* ✅ Nouveau rendu “Recettes → Liste” (remplace le JSON brut)            */
-/*  - Ne touche pas aux styles existants (.pre reste pour Budget)         */
+/* ✅ Nouveau rendu “Recettes → Liste”                                    */
 /* ===================================================================== */
 .ai-render{
   margin:0;
@@ -628,4 +631,103 @@ body{
   color: var(--muted);
   font-size: 13px;
   line-height: 1.45;
+}
+
+/* =========================================================
+   ✅ MOBILE RESPONSIVE (iPhone) — rendu "normal" + joli
+   ========================================================= */
+@media (max-width: 520px){
+
+  /* Tabs plus souples (sinon ça écrase tout) */
+  .tabs{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .tab{
+    flex: 1 1 140px;
+    padding: 10px 10px;
+    font-size: 13px;
+  }
+
+  /* Toolbar en colonne */
+  .toolbar{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbar .input{width:100%}
+
+  /* Grid2 déjà ok */
+  .grid2{grid-template-columns:1fr}
+
+  /* List wrapper un peu plus compact */
+  .list-wrapper{padding: 10px}
+
+  /* Section padding réduit */
+  .section__items{padding: 8px}
+
+  /* ITEM -> GRID (empilé propre) */
+  .item{
+    display:grid !important;
+    grid-template-columns: 36px 44px 1fr;
+    grid-template-areas:
+      "handle toggle name"
+      "controls controls controls";
+    gap: 10px !important;
+    align-items:center !important;
+    padding: 12px !important;
+  }
+
+  .handle{grid-area: handle; height:44px}
+  .toggle{grid-area: toggle}
+  .name{
+    grid-area: name;
+    min-width:0 !important;
+  }
+
+  /* Empêche le texte de se mettre en vertical */
+  .name__title{
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.2 !important;
+  }
+  .name__sub{
+    white-space: normal !important;
+    line-height: 1.35 !important;
+  }
+
+  /* Controls sous l'item, scroll horizontal doux si besoin */
+  .controls{
+    grid-area: controls;
+    width: 100%;
+    display:flex;
+    gap: 8px;
+    align-items:center;
+    overflow-x:auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  /* Cache la scrollbar sans bloquer le scroll (Safari/Chrome) */
+  .controls::-webkit-scrollbar{height:0px}
+
+  .price{width: 92px}
+  .qty{width: 74px}
+
+  /* Select catégorie: largeur mini pour rester utilisable */
+  .controls select.select{
+    min-width: 140px;
+  }
+
+  /* Delete : taille touch-friendly */
+  .delete{
+    min-width: 44px;
+    height: 42px;
+    padding: 10px;
+  }
+
+  /* Add row en colonne (sinon ça casse) */
+  .add-row form{
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

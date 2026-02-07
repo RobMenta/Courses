@@ -9,7 +9,15 @@
 
   <!-- PWA -->
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+
+  <!-- iOS: icône + mode standalone -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Favicon (optionnel mais utile sur desktop) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
 
   <!-- Styles (IMPORTANT : pas de CSS inline ici) -->
   <link rel="stylesheet" href="./styles.css?v=1" />

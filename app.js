@@ -717,30 +717,14 @@ function findItemBest(name) {
   let hit = state.items.find((it) => norm(it.name) === qn);
   if (hit) return hit;
 
-  // âš ï¸ Important:
-  // On Ã©vite les "includes" brut sur des petites requÃªtes (ex: "sel" matchait "vaisSELLe").
-  // On privilÃ©gie les correspondances par MOTS (tokens), puis un scoring lÃ©ger.
+  hit = state.items.find((it) => {
+    const n = norm(it.name);
+    return n.includes(qn) || qn.includes(n);
+  });
+  if (hit) return hit;
 
-  const qt = qn.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const qt = norm(q).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   if (!qt.length) return null;
-
-  // 1) Match sur token exact (ex: "sel" => "Gros sel" / "Sel d'oseille")
-  for (const it of state.items) {
-    const itTokens = norm(it.name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
-    if (itTokens.includes(qn)) return it;
-  }
-
-  // 2) Match sur prefix de token (utile pour "pim" => "Piment de cayenne")
-  // On l'autorise seulement si la requÃªte est assez longue pour Ã©viter les faux positifs.
-  if (qn.length >= 3) {
-    let bestPrefix = null;
-    for (const it of state.items) {
-      const itTokens = norm(it.name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
-      const score = itTokens.reduce((acc, t) => acc + (t.startsWith(qn) ? 1 : 0), 0);
-      if (score > 0 && (!bestPrefix || score > bestPrefix.score)) bestPrefix = { it, score };
-    }
-    if (bestPrefix) return bestPrefix.it;
-  }
 
   let best = null;
   for (const it of state.items) {
@@ -752,9 +736,7 @@ function findItemBest(name) {
     const score = inter / Math.max(1, new Set([...qt, ...itTokens]).size);
     if (!best || score > best.score) best = { it, score };
   }
-
-  // Seuil un peu plus permissif qu'avant, car on a dÃ©jÃ  filtrÃ© les faux positifs via les tokens.
-  if (best && best.score >= 0.4) return best.it;
+  if (best && best.score >= 0.55) return best.it;
   return null;
 }
 

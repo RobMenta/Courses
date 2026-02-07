@@ -709,34 +709,75 @@ els.btnAddCancel?.addEventListener("click", (e) => {
   closeAdd();
 });
 
+/* =======================
+   FIX SEL (findItemBest)
+   ======================= */
+function _tokenize(str) {
+  return norm(str)
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function _scoreTokens(qTokens, itTokens) {
+  // score:
+  // +4 : token exact
+  // +2 : prefix (sel -> sel)
+  // +1 : include token-to-token (évite sel -> vaisselle car "vaisselle" n'a PAS le token "sel")
+  let score = 0;
+  const itSet = new Set(itTokens);
+
+  for (const qt of qTokens) {
+    if (itSet.has(qt)) {
+      score += 4;
+      continue;
+    }
+    for (const it of itTokens) {
+      if (it.startsWith(qt) && qt.length >= 2) score += 2;
+      else if (qt.startsWith(it) && it.length >= 2) score += 2;
+      else if (qt.length >= 3 && it.includes(qt)) score += 1; // token-level only
+    }
+  }
+  return score;
+}
+
 function findItemBest(name) {
   const q = (name || "").toString().trim();
   if (!q) return null;
 
   const qn = norm(q);
+
+  // 1) exact full string match (best)
   let hit = state.items.find((it) => norm(it.name) === qn);
   if (hit) return hit;
 
-  hit = state.items.find((it) => {
-    const n = norm(it.name);
-    return n.includes(qn) || qn.includes(n);
-  });
-  if (hit) return hit;
+  // 2) token-based match (évite "sel" -> "vaisselle")
+  const qTokens = _tokenize(q);
+  if (!qTokens.length) return null;
 
-  const qt = norm(q).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
-  if (!qt.length) return null;
+  // si un seul token (ex: "sel"), on accepte un match si ce token est un mot de l'item
+  if (qTokens.length === 1) {
+    const t = qTokens[0];
+    // match exact token: "sel" match "gros sel", mais pas "vaisselle"
+    hit = state.items.find((it) => _tokenize(it.name).includes(t));
+    if (hit) return hit;
+  }
 
   let best = null;
+  let bestScore = 0;
+
   for (const it of state.items) {
-    const itTokens = norm(it.name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+    const itTokens = _tokenize(it.name);
     if (!itTokens.length) continue;
-    let inter = 0;
-    const set = new Set(itTokens);
-    for (const t of qt) if (set.has(t)) inter++;
-    const score = inter / Math.max(1, new Set([...qt, ...itTokens]).size);
-    if (!best || score > best.score) best = { it, score };
+    const s = _scoreTokens(qTokens, itTokens);
+    if (s > bestScore) {
+      bestScore = s;
+      best = it;
+    }
   }
-  if (best && best.score >= 0.55) return best.it;
+
+  // seuil mini pour éviter les faux positifs
+  if (best && bestScore >= 4) return best;
   return null;
 }
 
@@ -772,8 +813,8 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
 
   const exists = findItemBest(name);
   if (exists) {
+    // ✅ FIX: si ça matche un item existant, on le coche, MAIS on ne le déplace plus (pas de changement de catégorie)
     exists.checked = true;
-    if (category && sanitizeCategory(exists.category) !== category) exists.category = category;
     saveState(state);
     closeAdd();
     render();

@@ -1,14 +1,14 @@
 /*
-  Liste de course (PWA) — 100% front (GitHub Pages)
-  - Toggle ON/OFF + prix + quantité => total
-  - Séparation en blocs/familles (ordre magasin)
-  - Réorganisation par glisser-déposer (touch-friendly) DANS une famille
-  - ✅ Changer un produit de bloc via dropdown
-  - ✅ Ajouter un produit dans le bloc choisi
-  - ✅ IA: apply + fiable + support category sur add_item
+  Liste de course (PWA) â€” 100% front (GitHub Pages)
+  - Toggle ON/OFF + prix + quantitÃ© => total
+  - SÃ©paration en blocs/familles (ordre magasin)
+  - RÃ©organisation par glisser-dÃ©poser (touch-friendly) DANS une famille
+  - âœ… Changer un produit de bloc via dropdown
+  - âœ… Ajouter un produit dans le bloc choisi
+  - âœ… IA: apply + fiable + support category sur add_item
   - Sauvegarde localStorage
 
-  ⚠️ IA: l'app appelle un BACKEND (Worker / Function). Ne jamais mettre une clé OpenAI ici.
+  âš ï¸ IA: l'app appelle un BACKEND (Worker / Function). Ne jamais mettre une clÃ© OpenAI ici.
 */
 
 const STORAGE_KEY = "shopping_list_v2"; // <- v2 pour ne pas casser ton ancien stockage
@@ -23,48 +23,48 @@ const DEFAULT_SETTINGS = {
 
 // ------------------ CATALOG (TES BLOCS + TON ORDRE) ------------------
 const CATEGORIES = [
-  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "Débardeur blanc"] },
+  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "DÃ©bardeur blanc"] },
   {
     name: "Soins",
     items: [
-      "Shampoing","Après Shampoing","Laque","Deo","Crème hyd","Masque visage","Gel douche",
-      "Coton tige","Bain de bouche","Gratte langue","Dentifrice","Brosse à dent","Mouchoir"
+      "Shampoing","AprÃ¨s Shampoing","Laque","Deo","CrÃ¨me hyd","Masque visage","Gel douche",
+      "Coton tige","Bain de bouche","Gratte langue","Dentifrice","Brosse Ã  dent","Mouchoir"
     ]
   },
   {
     name: "Entretient 1",
     items: [
-      "Pierre d'argile","Eau déminéralisée","Alcool ménagé","Savon noir","Acide chlorydrique",
-      "Bicarbonate de soude","Percarbonate","Acide citrique","Cristaux de soude","Vinaigre ménagé","Sel d'oseille"
+      "Pierre d'argile","Eau dÃ©minÃ©ralisÃ©e","Alcool mÃ©nagÃ©","Savon noir","Acide chlorydrique",
+      "Bicarbonate de soude","Percarbonate","Acide citrique","Cristaux de soude","Vinaigre mÃ©nagÃ©","Sel d'oseille"
     ]
   },
   {
     name: "Entretient 2",
     items: [
-      "Éponges","Lessive","Destop","Adoucissant","Liquide vaisselle","Pastille lave vaisselle",
+      "Ã‰ponges","Lessive","Destop","Adoucissant","Liquide vaisselle","Pastille lave vaisselle",
       "Sac poubelle carton","Sac poubelles (50L)","Sopalin","PQ"
     ]
   },
   { name: "Boissons 1", items: ["Lait","Soft","Sirop","Jus"] },
-  { name: "Boissons 2", items: ["Bières","Vin blanc"] },
-  { name: "Petit dej 1", items: ["Sucre","Pépite choco","Agar-agar","Farine","Confiture","Miel","Compotes à boire","Cornichon"] },
-  { name: "Petit dej 2", items: ["Café","Thé","Flocon d'avoine","Barre Céréale"] },
+  { name: "Boissons 2", items: ["BiÃ¨res","Vin blanc"] },
+  { name: "Petit dej 1", items: ["Sucre","PÃ©pite choco","Agar-agar","Farine","Confiture","Miel","Compotes Ã  boire","Cornichon"] },
+  { name: "Petit dej 2", items: ["CafÃ©","ThÃ©","Flocon d'avoine","Barre CÃ©rÃ©ale"] },
   { name: "Sucreries", items: ["Bonbons","Pastille menthe","Country","Prince"] },
   {
     name: "Sec 1",
     items: ["Olives","Huile d'olive","Moutardes","Vinaigre balsamique","Gros sel","Herbe de provence","Cub'or","Piment de cayenne"]
   },
-  { name: "Boites 1", items: ["Maïs","Pois chiches"] },
-  { name: "Boites 2", items: ["Thon","Croûtons","Riz","Riz/quinoa pré cuit","Purée","Pâtes"] },
+  { name: "Boites 1", items: ["MaÃ¯s","Pois chiches"] },
+  { name: "Boites 2", items: ["Thon","CroÃ»tons","Riz","Riz/quinoa prÃ© cuit","PurÃ©e","PÃ¢tes"] },
   { name: "Frais 1", items: ["Tranche dinde","Lardon","Carottes","Gnocchi"] },
-  { name: "Frais 2", items: ["Yaourt","Skyr à boire","Compotes"] },
+  { name: "Frais 2", items: ["Yaourt","Skyr Ã  boire","Compotes"] },
   { name: "Frais 3", items: ["Oeufs","Fromage"] },
   {
-    name: "Fruits/légumes",
+    name: "Fruits/lÃ©gumes",
     items: ["Endives","Patate douce","Tomates","Avocats","Concombre","Poivrons","Bananes","Fraises","Pommes","Oignons","Saumon","Pomme de terre"]
   },
-  { name: "Viandes", items: ["Saucisses","Escalope","Poisson pané","Cordon bleu"] },
-  { name: "Surgelé", items: ["Poivron surgelé","Steak","Poisson","nuggets","Poisson pané (surgelé)","Pomme de terre surgelé","Glaces"] }
+  { name: "Viandes", items: ["Saucisses","Escalope","Poisson panÃ©","Cordon bleu"] },
+  { name: "SurgelÃ©", items: ["Poivron surgelÃ©","Steak","Poisson","nuggets","Poisson panÃ© (surgelÃ©)","Pomme de terre surgelÃ©","Glaces"] }
 ];
 
 const CATEGORY_NAMES = CATEGORIES.map((c) => c.name);
@@ -156,9 +156,9 @@ function sanitizeItem(it, fallback) {
 
 /**
  * Migration:
- * - si un état v2 existe => on le charge
- * - sinon on regarde l’ancien v1 => on “merge” les champs (checked/qty/price) sur la nouvelle liste canonique
- * - sinon on prend l’état initial canonique
+ * - si un Ã©tat v2 existe => on le charge
+ * - sinon on regarde lâ€™ancien v1 => on â€œmergeâ€ les champs (checked/qty/price) sur la nouvelle liste canonique
+ * - sinon on prend lâ€™Ã©tat initial canonique
  */
 function loadState() {
   // v2
@@ -297,8 +297,8 @@ function computeTotal() {
   if (els.totalValue) els.totalValue.textContent = formatEUR(total);
   if (els.totalHint) {
     els.totalHint.textContent =
-      count === 0 ? "Active un produit + saisis un prix pour l’ajouter au total."
-                 : `${count} produit(s) activé(s).`;
+      count === 0 ? "Active un produit + saisis un prix pour lâ€™ajouter au total."
+                 : `${count} produit(s) activÃ©(s).`;
   }
 }
 
@@ -324,7 +324,7 @@ function makeCategorySelect(current, onChange) {
   const sel = document.createElement("select");
   sel.className = "select";
   sel.title = "Changer de bloc";
-  sel.setAttribute("aria-label", "Catégorie");
+  sel.setAttribute("aria-label", "CatÃ©gorie");
   sel.style.width = "120px";
   sel.style.maxWidth = "34vw";
 
@@ -392,10 +392,10 @@ function render() {
 
       const handle = document.createElement("div");
       handle.className = "handle";
-      handle.textContent = "☰";
-      handle.title = f ? "Réordonnancement désactivé pendant la recherche" : "Glisser pour réordonner";
+      handle.textContent = "â˜°";
+      handle.title = f ? "RÃ©ordonnancement dÃ©sactivÃ© pendant la recherche" : "Glisser pour rÃ©ordonner";
       handle.setAttribute("role", "button");
-      handle.setAttribute("aria-label", "Réordonner");
+      handle.setAttribute("aria-label", "RÃ©ordonner");
       handle.tabIndex = 0;
 
       const toggle = document.createElement("button");
@@ -414,7 +414,7 @@ function render() {
 
       const sub = document.createElement("div");
       sub.className = "name__sub";
-      sub.textContent = "Prix unitaire × quantité (activé = total)";
+      sub.textContent = "Prix unitaire Ã— quantitÃ© (activÃ© = total)";
 
       name.appendChild(nameTitle);
       name.appendChild(sub);
@@ -433,7 +433,7 @@ function render() {
       for (const v of qopts) {
         const opt = document.createElement("option");
         opt.value = String(v);
-        opt.textContent = "×" + String(v);
+        opt.textContent = "Ã—" + String(v);
         if (Number(it.qty) === v) opt.selected = true;
         qty.appendChild(opt);
       }
@@ -447,7 +447,7 @@ function render() {
 
       const del = document.createElement("button");
       del.className = "delete";
-      del.textContent = "🗑️";
+      del.textContent = "ðŸ—‘ï¸";
       del.title = "Supprimer";
 
       controls.appendChild(price);
@@ -481,7 +481,7 @@ function render() {
       });
 
       del.addEventListener("click", () => {
-        if (!confirm(`Supprimer “${it.name}” ?`)) return;
+        if (!confirm(`Supprimer â€œ${it.name}â€ ?`)) return;
         state.items = state.items.filter((x) => x.id !== it.id);
         saveState(state);
         render();
@@ -656,7 +656,7 @@ if (els.searchInput) {
   });
 }
 
-// ------------------ Add item (✅ avec catégorie) ------------------
+// ------------------ Add item (âœ… avec catÃ©gorie) ------------------
 function ensureAddCategorySelect() {
   if (!els.addRow) return null;
 
@@ -717,14 +717,30 @@ function findItemBest(name) {
   let hit = state.items.find((it) => norm(it.name) === qn);
   if (hit) return hit;
 
-  hit = state.items.find((it) => {
-    const n = norm(it.name);
-    return n.includes(qn) || qn.includes(n);
-  });
-  if (hit) return hit;
+  // âš ï¸ Important:
+  // On Ã©vite les "includes" brut sur des petites requÃªtes (ex: "sel" matchait "vaisSELLe").
+  // On privilÃ©gie les correspondances par MOTS (tokens), puis un scoring lÃ©ger.
 
-  const qt = norm(q).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const qt = qn.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   if (!qt.length) return null;
+
+  // 1) Match sur token exact (ex: "sel" => "Gros sel" / "Sel d'oseille")
+  for (const it of state.items) {
+    const itTokens = norm(it.name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+    if (itTokens.includes(qn)) return it;
+  }
+
+  // 2) Match sur prefix de token (utile pour "pim" => "Piment de cayenne")
+  // On l'autorise seulement si la requÃªte est assez longue pour Ã©viter les faux positifs.
+  if (qn.length >= 3) {
+    let bestPrefix = null;
+    for (const it of state.items) {
+      const itTokens = norm(it.name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+      const score = itTokens.reduce((acc, t) => acc + (t.startsWith(qn) ? 1 : 0), 0);
+      if (score > 0 && (!bestPrefix || score > bestPrefix.score)) bestPrefix = { it, score };
+    }
+    if (bestPrefix) return bestPrefix.it;
+  }
 
   let best = null;
   for (const it of state.items) {
@@ -736,7 +752,9 @@ function findItemBest(name) {
     const score = inter / Math.max(1, new Set([...qt, ...itTokens]).size);
     if (!best || score > best.score) best = { it, score };
   }
-  if (best && best.score >= 0.55) return best.it;
+
+  // Seuil un peu plus permissif qu'avant, car on a dÃ©jÃ  filtrÃ© les faux positifs via les tokens.
+  if (best && best.score >= 0.4) return best.it;
   return null;
 }
 
@@ -815,7 +833,7 @@ els.btnResetPrices?.addEventListener("click", () => {
 });
 
 els.btnResetAll?.addEventListener("click", () => {
-  if (!confirm("Reset complet (ordre, activations, prix, quantités) ?")) return;
+  if (!confirm("Reset complet (ordre, activations, prix, quantitÃ©s) ?")) return;
   localStorage.removeItem(STORAGE_KEY);
   state = structuredClone(INITIAL_STATE);
   saveState(state);
@@ -862,7 +880,7 @@ function getCheckedSummary() {
 async function callAI(kind, prompt, extra = {}) {
   const endpoint = (loadSettings().aiEndpoint || "").trim();
   if (!endpoint) {
-    alert("Configure d'abord l'URL backend IA dans ⚙️ Réglages.");
+    alert("Configure d'abord l'URL backend IA dans âš™ï¸ RÃ©glages.");
     return null;
   }
 
@@ -926,7 +944,7 @@ function renderAiRecipes(out) {
   if (!els.aiOutRecipes) return;
 
   if (!out) {
-    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
+    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">â€”</div>`;
     return;
   }
 
@@ -939,7 +957,7 @@ function renderAiRecipes(out) {
   if (message) {
     html += `
       <div class="ai-callout">
-        <div class="ai-callout__title">🧠 Résumé</div>
+        <div class="ai-callout__title">ðŸ§  RÃ©sumÃ©</div>
         <div class="ai-callout__text">${escapeHtml(message)}</div>
       </div>
     `;
@@ -960,8 +978,8 @@ function renderAiRecipes(out) {
     const missing = pickArray(r, ["missing_items", "missing", "to_buy"]) || [];
 
     const tags = [];
-    if (time) tags.push(`⏱️ ${time}`);
-    if (difficulty) tags.push(`😌 ${difficulty}`);
+    if (time) tags.push(`â±ï¸ ${time}`);
+    if (difficulty) tags.push(`ðŸ˜Œ ${difficulty}`);
 
     const ingLines = [];
     for (const x of ingredients) {
@@ -993,7 +1011,7 @@ function renderAiRecipes(out) {
     const missingClean = uniqStrings(missingLines);
 
     let card = `<div class="ai-card">`;
-    card += `<div class="ai-card__title">🍳 ${escapeHtml(title)}</div>`;
+    card += `<div class="ai-card__title">ðŸ³ ${escapeHtml(title)}</div>`;
 
     if (tags.length) {
       card += `<div class="ai-tags">`;
@@ -1002,17 +1020,17 @@ function renderAiRecipes(out) {
     }
 
     if (ingClean.length) {
-      card += `<div class="ai-subtitle">🧾 Ingrédients</div>`;
+      card += `<div class="ai-subtitle">ðŸ§¾ IngrÃ©dients</div>`;
       card += `<ul class="ai-list">${ingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (missingClean.length) {
-      card += `<div class="ai-subtitle">🛍️ À acheter (manquants)</div>`;
+      card += `<div class="ai-subtitle">ðŸ›ï¸ Ã€ acheter (manquants)</div>`;
       card += `<ul class="ai-list">${missingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (stepsClean.length) {
-      card += `<div class="ai-subtitle">👨‍🍳 Étapes</div>`;
+      card += `<div class="ai-subtitle">ðŸ‘¨â€ðŸ³ Ã‰tapes</div>`;
       card += `<ul class="ai-list">${stepsClean.map((st) => `<li>${escapeHtml(st)}</li>`).join("")}</ul>`;
     }
 
@@ -1023,7 +1041,7 @@ function renderAiRecipes(out) {
   }
 
   if (cards.length) html += cards.join("");
-  else html += `<div class="ai-render__empty">Aucune recette lisible trouvée. (Le bouton “Appliquer” peut quand même fonctionner si des actions existent.)</div>`;
+  else html += `<div class="ai-render__empty">Aucune recette lisible trouvÃ©e. (Le bouton â€œAppliquerâ€ peut quand mÃªme fonctionner si des actions existent.)</div>`;
 
   const globalMissingLines = [];
   for (const x of globalMissing) {
@@ -1040,7 +1058,7 @@ function renderAiRecipes(out) {
   if (globalMissingClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">🛒 Achats proposés</div>
+        <div class="ai-card__title">ðŸ›’ Achats proposÃ©s</div>
         <div class="ai-subtitle">Liste globale</div>
         <ul class="ai-list">
           ${globalMissingClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
@@ -1049,7 +1067,7 @@ function renderAiRecipes(out) {
     `;
   }
 
-  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">—</div>`;
+  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">â€”</div>`;
 }
 
 // ------------------ AI render: Budget ------------------
@@ -1057,7 +1075,7 @@ function renderAiBudget(out) {
   if (!els.aiOutBudget) return;
 
   if (!out) {
-    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
+    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">â€”</div>`;
     return;
   }
 
@@ -1072,7 +1090,7 @@ function renderAiBudget(out) {
   if (message) {
     html += `
       <div class="ai-callout">
-        <div class="ai-callout__title">📌 Résumé</div>
+        <div class="ai-callout__title">ðŸ“Œ RÃ©sumÃ©</div>
         <div class="ai-callout__text">${escapeHtml(message)}</div>
       </div>
     `;
@@ -1081,7 +1099,7 @@ function renderAiBudget(out) {
   if (est !== null && est !== undefined && String(est).trim() !== "") {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">🧾 Estimation</div>
+        <div class="ai-card__title">ðŸ§¾ Estimation</div>
         <div class="ai-card__why">${escapeHtml(String(est))}</div>
       </div>
     `;
@@ -1098,18 +1116,18 @@ function renderAiBudget(out) {
       const breakfast = (m.breakfast || m.petit_dej || m.petitdej || "").toString().trim();
       const lunch = (m.lunch || m.dejeuner || m.midi || "").toString().trim();
       const dinner = (m.dinner || m.diner || m.soir || "").toString().trim();
-      if (breakfast) lines.push(`🥣 ${breakfast}`);
-      if (lunch) lines.push(`🍽️ ${lunch}`);
-      if (dinner) lines.push(`🌙 ${dinner}`);
-      const head = [day, title].filter(Boolean).join(" — ");
-      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" • "))}` : ""}</li>`);
-      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" • "))}</li>`);
+      if (breakfast) lines.push(`ðŸ¥£ ${breakfast}`);
+      if (lunch) lines.push(`ðŸ½ï¸ ${lunch}`);
+      if (dinner) lines.push(`ðŸŒ™ ${dinner}`);
+      const head = [day, title].filter(Boolean).join(" â€” ");
+      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" â€¢ "))}` : ""}</li>`);
+      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" â€¢ "))}</li>`);
     }
 
     if (cardParts.length) {
       html += `
         <div class="ai-card">
-          <div class="ai-card__title">📅 Menu semaine</div>
+          <div class="ai-card__title">ðŸ“… Menu semaine</div>
           <ul class="ai-list">
             ${cardParts.join("")}
           </ul>
@@ -1133,8 +1151,8 @@ function renderAiBudget(out) {
   if (shopClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">🛒 Liste de courses</div>
-        <div class="ai-subtitle">Tu peux cliquer “Appliquer” pour cocher/ajouter automatiquement</div>
+        <div class="ai-card__title">ðŸ›’ Liste de courses</div>
+        <div class="ai-subtitle">Tu peux cliquer â€œAppliquerâ€ pour cocher/ajouter automatiquement</div>
         <ul class="ai-list">
           ${shopClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
         </ul>
@@ -1146,7 +1164,7 @@ function renderAiBudget(out) {
   if (tipsClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">💡 Conseils</div>
+        <div class="ai-card__title">ðŸ’¡ Conseils</div>
         <ul class="ai-list">
           ${tipsClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
         </ul>
@@ -1157,8 +1175,8 @@ function renderAiBudget(out) {
   if (!html) {
     html = `
       <div class="ai-card">
-        <div class="ai-card__title">📌 Résultat</div>
-        <div class="ai-card__why">Format inattendu côté IA — voici la donnée brute :</div>
+        <div class="ai-card__title">ðŸ“Œ RÃ©sultat</div>
+        <div class="ai-card__why">Format inattendu cÃ´tÃ© IA â€” voici la donnÃ©e brute :</div>
         <pre class="pre">${escapeHtml(JSON.stringify(out, null, 2))}</pre>
       </div>
     `;
@@ -1222,7 +1240,7 @@ els.btnClearAi.forEach((b) => {
   b.addEventListener("click", () => {
     lastAiPayload = null;
     lastAiKind = null;
-    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
+    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">â€”</div>`;
     if (els.btnApplyAi) els.btnApplyAi.disabled = true;
   });
 });
@@ -1231,11 +1249,11 @@ els.btnClearAi.forEach((b) => {
 els.btnClearAiBudget?.addEventListener("click", () => {
   lastAiPayload = null;
   lastAiKind = null;
-  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
+  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">â€”</div>`;
   if (els.btnApplyAiBudget) els.btnApplyAiBudget.disabled = true;
 });
 
-// ✅ Appliquer actions (mutualisé)
+// âœ… Appliquer actions (mutualisÃ©)
 function applyAiActions(out) {
   if (!out || !Array.isArray(out.actions)) return false;
 
@@ -1250,7 +1268,7 @@ function applyAiActions(out) {
 
     const it = findItemBest(rawName);
 
-    // catégorie seulement si fournie explicitement par l'IA (utile uniquement pour les nouveaux items)
+    // catÃ©gorie seulement si fournie explicitement par l'IA (utile uniquement pour les nouveaux items)
     const hasExplicitCategory =
       Object.prototype.hasOwnProperty.call(a, "category") &&
       String(a.category || "").trim() !== "";
@@ -1268,12 +1286,12 @@ function applyAiActions(out) {
       }
     } else if (type === "add_item") {
       if (it) {
-        // ✅ FIX: existe déjà => on coche + qty, MAIS on ne change JAMAIS sa catégorie
+        // âœ… FIX: existe dÃ©jÃ  => on coche + qty, MAIS on ne change JAMAIS sa catÃ©gorie
         it.checked = true;
         const q = clamp(Number(a.qty) || 1, 1, 999);
         if (q > 1) it.qty = q;
 
-        // ❌ Important: ne pas déplacer l’item existant (sinon ça "bouge toute la liste")
+        // âŒ Important: ne pas dÃ©placer lâ€™item existant (sinon Ã§a "bouge toute la liste")
         changed = true;
       } else {
         const name = rawName;
@@ -1305,10 +1323,10 @@ function applyAiActions(out) {
 els.btnApplyAi?.addEventListener("click", () => {
   const ok = applyAiActions(lastAiPayload);
   if (ok) {
-    alert("OK — actions appliquées ✅");
+    alert("OK â€” actions appliquÃ©es âœ…");
     setActiveTab("list");
   } else {
-    alert("Rien à appliquer (actions non reconnues ou produits introuvables).");
+    alert("Rien Ã  appliquer (actions non reconnues ou produits introuvables).");
   }
 });
 
@@ -1316,10 +1334,10 @@ els.btnApplyAi?.addEventListener("click", () => {
 els.btnApplyAiBudget?.addEventListener("click", () => {
   const ok = applyAiActions(lastAiPayload);
   if (ok) {
-    alert("OK — actions appliquées ✅");
+    alert("OK â€” actions appliquÃ©es âœ…");
     setActiveTab("list");
   } else {
-    alert("Rien à appliquer (actions non reconnues ou produits introuvables).");
+    alert("Rien Ã  appliquer (actions non reconnues ou produits introuvables).");
   }
 });
 
@@ -1335,8 +1353,8 @@ setActiveTab("list");
 render();
 
 if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
-  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
+  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">â€”</div>`;
 }
 if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
-  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
+  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">â€”</div>`;
 }

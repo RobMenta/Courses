@@ -8,7 +8,7 @@
 // - skipWaiting + clients.claim
 // - message "SKIP_WAITING" (permet à la page de forcer l’activation)
 
-const VERSION = "v14"; // <- 🔥 incrémente quand tu modifies app.js / styles / index etc.
+const VERSION = "v15"; // <- 🔥 incrémente quand tu modifies app.js / styles / index etc.
 const CACHE_PREFIX = "courses-pwa-";
 const CACHE_NAME = `${CACHE_PREFIX}${VERSION}`;
 

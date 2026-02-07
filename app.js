@@ -1250,7 +1250,7 @@ function applyAiActions(out) {
 
     const it = findItemBest(rawName);
 
-    // ✅ CORRECTIF: catégorie seulement si fournie explicitement par l'IA
+    // catégorie seulement si fournie explicitement par l'IA (utile uniquement pour les nouveaux items)
     const hasExplicitCategory =
       Object.prototype.hasOwnProperty.call(a, "category") &&
       String(a.category || "").trim() !== "";
@@ -1268,16 +1268,12 @@ function applyAiActions(out) {
       }
     } else if (type === "add_item") {
       if (it) {
-        // existe déjà => on coche + qty, MAIS on ne change pas sa catégorie par défaut
+        // ✅ FIX: existe déjà => on coche + qty, MAIS on ne change JAMAIS sa catégorie
         it.checked = true;
         const q = clamp(Number(a.qty) || 1, 1, 999);
         if (q > 1) it.qty = q;
 
-        // ✅ on change la catégorie uniquement si l'IA l'a donnée explicitement
-        if (explicitCategory && sanitizeCategory(it.category) !== explicitCategory) {
-          it.category = explicitCategory;
-        }
-
+        // ❌ Important: ne pas déplacer l’item existant (sinon ça "bouge toute la liste")
         changed = true;
       } else {
         const name = rawName;
@@ -1344,4 +1340,3 @@ if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
 if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
   els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
 }
-

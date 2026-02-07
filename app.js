@@ -1,14 +1,14 @@
 /*
-  Liste de course (PWA) â€” 100% front (GitHub Pages)
-  - Toggle ON/OFF + prix + quantitÃ© => total
-  - SÃ©paration en blocs/familles (ordre magasin)
-  - RÃ©organisation par glisser-dÃ©poser (touch-friendly) DANS une famille
-  - âœ… Changer un produit de bloc via dropdown
-  - âœ… Ajouter un produit dans le bloc choisi
-  - âœ… IA: apply + fiable + support category sur add_item
+  Liste de course (PWA) — 100% front (GitHub Pages)
+  - Toggle ON/OFF + prix + quantité => total
+  - Séparation en blocs/familles (ordre magasin)
+  - Réorganisation par glisser-déposer (touch-friendly) DANS une famille
+  - ✅ Changer un produit de bloc via dropdown
+  - ✅ Ajouter un produit dans le bloc choisi
+  - ✅ IA: apply + fiable + support category sur add_item
   - Sauvegarde localStorage
 
-  âš ï¸ IA: l'app appelle un BACKEND (Worker / Function). Ne jamais mettre une clÃ© OpenAI ici.
+  ⚠️ IA: l'app appelle un BACKEND (Worker / Function). Ne jamais mettre une clé OpenAI ici.
 */
 
 const STORAGE_KEY = "shopping_list_v2"; // <- v2 pour ne pas casser ton ancien stockage
@@ -23,48 +23,91 @@ const DEFAULT_SETTINGS = {
 
 // ------------------ CATALOG (TES BLOCS + TON ORDRE) ------------------
 const CATEGORIES = [
-  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "DÃ©bardeur blanc"] },
+  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "D\u00E9bardeur blanc"] },
   {
     name: "Soins",
     items: [
-      "Shampoing","AprÃ¨s Shampoing","Laque","Deo","CrÃ¨me hyd","Masque visage","Gel douche",
-      "Coton tige","Bain de bouche","Gratte langue","Dentifrice","Brosse Ã  dent","Mouchoir"
+      "Shampoing",
+      "Apr\u00E8s Shampoing",
+      "Laque",
+      "Deo",
+      "Cr\u00E8me hyd",
+      "Masque visage",
+      "Gel douche",
+      "Coton tige",
+      "Bain de bouche",
+      "Gratte langue",
+      "Dentifrice",
+      "Brosse \u00E0 dent",
+      "Mouchoir"
     ]
   },
   {
     name: "Entretient 1",
     items: [
-      "Pierre d'argile","Eau dÃ©minÃ©ralisÃ©e","Alcool mÃ©nagÃ©","Savon noir","Acide chlorydrique",
-      "Bicarbonate de soude","Percarbonate","Acide citrique","Cristaux de soude","Vinaigre mÃ©nagÃ©","Sel d'oseille"
+      "Pierre d'argile",
+      "Eau d\u00E9min\u00E9ralis\u00E9e",
+      "Alcool m\u00E9nag\u00E9",
+      "Savon noir",
+      "Acide chlorydrique",
+      "Bicarbonate de soude",
+      "Percarbonate",
+      "Acide citrique",
+      "Cristaux de soude",
+      "Vinaigre m\u00E9nag\u00E9",
+      "Sel d'oseille"
     ]
   },
   {
     name: "Entretient 2",
     items: [
-      "Ã‰ponges","Lessive","Destop","Adoucissant","Liquide vaisselle","Pastille lave vaisselle",
-      "Sac poubelle carton","Sac poubelles (50L)","Sopalin","PQ"
+      "\u00C9ponges",
+      "Lessive",
+      "Destop",
+      "Adoucissant",
+      "Liquide vaisselle",
+      "Pastille lave vaisselle",
+      "Sac poubelle carton",
+      "Sac poubelles (50L)",
+      "Sopalin",
+      "PQ"
     ]
   },
-  { name: "Boissons 1", items: ["Lait","Soft","Sirop","Jus"] },
-  { name: "Boissons 2", items: ["BiÃ¨res","Vin blanc"] },
-  { name: "Petit dej 1", items: ["Sucre","PÃ©pite choco","Agar-agar","Farine","Confiture","Miel","Compotes Ã  boire","Cornichon"] },
-  { name: "Petit dej 2", items: ["CafÃ©","ThÃ©","Flocon d'avoine","Barre CÃ©rÃ©ale"] },
-  { name: "Sucreries", items: ["Bonbons","Pastille menthe","Country","Prince"] },
+  { name: "Boissons 1", items: ["Lait", "Soft", "Sirop", "Jus"] },
+  { name: "Boissons 2", items: ["Bi\u00E8res", "Vin blanc"] },
+  {
+    name: "Petit dej 1",
+    items: [
+      "Sucre",
+      "P\u00E9pite choco",
+      "Agar-agar",
+      "Farine",
+      "Confiture",
+      "Miel",
+      "Compotes \u00E0 boire",
+      "Cornichon"
+    ]
+  },
+  { name: "Petit dej 2", items: ["Caf\u00E9", "Th\u00E9", "Flocon d'avoine", "Barre C\u00E9r\u00E9ale"] },
+  { name: "Sucreries", items: ["Bonbons", "Pastille menthe", "Country", "Prince"] },
   {
     name: "Sec 1",
-    items: ["Olives","Huile d'olive","Moutardes","Vinaigre balsamique","Gros sel","Herbe de provence","Cub'or","Piment de cayenne"]
+    items: ["Olives", "Huile d'olive", "Moutardes", "Vinaigre balsamique", "Gros sel", "Herbe de provence", "Cub'or", "Piment de cayenne"]
   },
-  { name: "Boites 1", items: ["MaÃ¯s","Pois chiches"] },
-  { name: "Boites 2", items: ["Thon","CroÃ»tons","Riz","Riz/quinoa prÃ© cuit","PurÃ©e","PÃ¢tes"] },
-  { name: "Frais 1", items: ["Tranche dinde","Lardon","Carottes","Gnocchi"] },
-  { name: "Frais 2", items: ["Yaourt","Skyr Ã  boire","Compotes"] },
-  { name: "Frais 3", items: ["Oeufs","Fromage"] },
+  { name: "Boites 1", items: ["Ma\u00EFs", "Pois chiches"] },
+  { name: "Boites 2", items: ["Thon", "Cro\u00FBtons", "Riz", "Riz/quinoa pr\u00E9 cuit", "Pur\u00E9e", "P\u00E2tes"] },
+  { name: "Frais 1", items: ["Tranche dinde", "Lardon", "Carottes", "Gnocchi"] },
+  { name: "Frais 2", items: ["Yaourt", "Skyr \u00E0 boire", "Compotes"] },
+  { name: "Frais 3", items: ["Oeufs", "Fromage"] },
   {
-    name: "Fruits/lÃ©gumes",
-    items: ["Endives","Patate douce","Tomates","Avocats","Concombre","Poivrons","Bananes","Fraises","Pommes","Oignons","Saumon","Pomme de terre"]
+    name: "Fruits/l\u00E9gumes",
+    items: ["Endives", "Patate douce", "Tomates", "Avocats", "Concombre", "Poivrons", "Bananes", "Fraises", "Pommes", "Oignons", "Saumon", "Pomme de terre"]
   },
-  { name: "Viandes", items: ["Saucisses","Escalope","Poisson panÃ©","Cordon bleu"] },
-  { name: "SurgelÃ©", items: ["Poivron surgelÃ©","Steak","Poisson","nuggets","Poisson panÃ© (surgelÃ©)","Pomme de terre surgelÃ©","Glaces"] }
+  { name: "Viandes", items: ["Saucisses", "Escalope", "Poisson pan\u00E9", "Cordon bleu"] },
+  {
+    name: "Surgel\u00E9",
+    items: ["Poivron surgel\u00E9", "Steak", "Poisson", "nuggets", "Poisson pan\u00E9 (surgel\u00E9)", "Pomme de terre surgel\u00E9", "Glaces"]
+  }
 ];
 
 const CATEGORY_NAMES = CATEGORIES.map((c) => c.name);
@@ -156,9 +199,9 @@ function sanitizeItem(it, fallback) {
 
 /**
  * Migration:
- * - si un Ã©tat v2 existe => on le charge
- * - sinon on regarde lâ€™ancien v1 => on â€œmergeâ€ les champs (checked/qty/price) sur la nouvelle liste canonique
- * - sinon on prend lâ€™Ã©tat initial canonique
+ * - si un état v2 existe => on le charge
+ * - sinon on regarde l'ancien v1 => on “merge” les champs (checked/qty/price) sur la nouvelle liste canonique
+ * - sinon on prend l'état initial canonique
  */
 function loadState() {
   // v2
@@ -297,8 +340,8 @@ function computeTotal() {
   if (els.totalValue) els.totalValue.textContent = formatEUR(total);
   if (els.totalHint) {
     els.totalHint.textContent =
-      count === 0 ? "Active un produit + saisis un prix pour lâ€™ajouter au total."
-                 : `${count} produit(s) activÃ©(s).`;
+      count === 0 ? "Active un produit + saisis un prix pour l\u2019ajouter au total."
+                 : `${count} produit(s) activ\u00E9(s).`;
   }
 }
 
@@ -324,7 +367,7 @@ function makeCategorySelect(current, onChange) {
   const sel = document.createElement("select");
   sel.className = "select";
   sel.title = "Changer de bloc";
-  sel.setAttribute("aria-label", "CatÃ©gorie");
+  sel.setAttribute("aria-label", "Cat\u00E9gorie");
   sel.style.width = "120px";
   sel.style.maxWidth = "34vw";
 
@@ -392,10 +435,10 @@ function render() {
 
       const handle = document.createElement("div");
       handle.className = "handle";
-      handle.textContent = "â˜°";
-      handle.title = f ? "RÃ©ordonnancement dÃ©sactivÃ© pendant la recherche" : "Glisser pour rÃ©ordonner";
+      handle.textContent = "\u2630"; // ☰
+      handle.title = f ? "R\u00E9ordonnancement d\u00E9sactiv\u00E9 pendant la recherche" : "Glisser pour r\u00E9ordonner";
       handle.setAttribute("role", "button");
-      handle.setAttribute("aria-label", "RÃ©ordonner");
+      handle.setAttribute("aria-label", "R\u00E9ordonner");
       handle.tabIndex = 0;
 
       const toggle = document.createElement("button");
@@ -414,7 +457,7 @@ function render() {
 
       const sub = document.createElement("div");
       sub.className = "name__sub";
-      sub.textContent = "Prix unitaire Ã— quantitÃ© (activÃ© = total)";
+      sub.textContent = "Prix unitaire \u00D7 quantit\u00E9 (activ\u00E9 = total)";
 
       name.appendChild(nameTitle);
       name.appendChild(sub);
@@ -433,7 +476,7 @@ function render() {
       for (const v of qopts) {
         const opt = document.createElement("option");
         opt.value = String(v);
-        opt.textContent = "Ã—" + String(v);
+        opt.textContent = "\u00D7" + String(v); // ×
         if (Number(it.qty) === v) opt.selected = true;
         qty.appendChild(opt);
       }
@@ -447,7 +490,7 @@ function render() {
 
       const del = document.createElement("button");
       del.className = "delete";
-      del.textContent = "ðŸ—‘ï¸";
+      del.textContent = "\uD83D\uDDD1\uFE0F"; // 🗑️
       del.title = "Supprimer";
 
       controls.appendChild(price);
@@ -481,7 +524,7 @@ function render() {
       });
 
       del.addEventListener("click", () => {
-        if (!confirm(`Supprimer â€œ${it.name}â€ ?`)) return;
+        if (!confirm(`Supprimer "${it.name}" ?`)) return;
         state.items = state.items.filter((x) => x.id !== it.id);
         saveState(state);
         render();
@@ -656,7 +699,7 @@ if (els.searchInput) {
   });
 }
 
-// ------------------ Add item (âœ… avec catÃ©gorie) ------------------
+// ------------------ Add item (✅ avec catégorie) ------------------
 function ensureAddCategorySelect() {
   if (!els.addRow) return null;
 
@@ -758,7 +801,6 @@ function findItemBest(name) {
   // si un seul token (ex: "sel"), on accepte un match si ce token est un mot de l'item
   if (qTokens.length === 1) {
     const t = qTokens[0];
-    // match exact token: "sel" match "gros sel", mais pas "vaisselle"
     hit = state.items.find((it) => _tokenize(it.name).includes(t));
     if (hit) return hit;
   }
@@ -813,7 +855,7 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
 
   const exists = findItemBest(name);
   if (exists) {
-    // ✅ FIX: si ça matche un item existant, on le coche, MAIS on ne le déplace plus (pas de changement de catégorie)
+    // ✅ FIX: si ça matche un item existant, on le coche, MAIS on ne le déplace plus
     exists.checked = true;
     saveState(state);
     closeAdd();
@@ -856,7 +898,7 @@ els.btnResetPrices?.addEventListener("click", () => {
 });
 
 els.btnResetAll?.addEventListener("click", () => {
-  if (!confirm("Reset complet (ordre, activations, prix, quantitÃ©s) ?")) return;
+  if (!confirm("Reset complet (ordre, activations, prix, quantit\u00E9s) ?")) return;
   localStorage.removeItem(STORAGE_KEY);
   state = structuredClone(INITIAL_STATE);
   saveState(state);
@@ -903,7 +945,7 @@ function getCheckedSummary() {
 async function callAI(kind, prompt, extra = {}) {
   const endpoint = (loadSettings().aiEndpoint || "").trim();
   if (!endpoint) {
-    alert("Configure d'abord l'URL backend IA dans âš™ï¸ RÃ©glages.");
+    alert("Configure d'abord l'URL backend IA dans \u2699\uFE0F R\u00E9glages.");
     return null;
   }
 
@@ -967,7 +1009,7 @@ function renderAiRecipes(out) {
   if (!els.aiOutRecipes) return;
 
   if (!out) {
-    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">â€”</div>`;
+    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
     return;
   }
 
@@ -980,7 +1022,7 @@ function renderAiRecipes(out) {
   if (message) {
     html += `
       <div class="ai-callout">
-        <div class="ai-callout__title">ðŸ§  RÃ©sumÃ©</div>
+        <div class="ai-callout__title">\uD83E\uDDE0 R\u00E9sum\u00E9</div>
         <div class="ai-callout__text">${escapeHtml(message)}</div>
       </div>
     `;
@@ -1001,8 +1043,8 @@ function renderAiRecipes(out) {
     const missing = pickArray(r, ["missing_items", "missing", "to_buy"]) || [];
 
     const tags = [];
-    if (time) tags.push(`â±ï¸ ${time}`);
-    if (difficulty) tags.push(`ðŸ˜Œ ${difficulty}`);
+    if (time) tags.push(`\u23F1\uFE0F ${time}`);
+    if (difficulty) tags.push(`\uD83D\uDE0C ${difficulty}`);
 
     const ingLines = [];
     for (const x of ingredients) {
@@ -1034,7 +1076,7 @@ function renderAiRecipes(out) {
     const missingClean = uniqStrings(missingLines);
 
     let card = `<div class="ai-card">`;
-    card += `<div class="ai-card__title">ðŸ³ ${escapeHtml(title)}</div>`;
+    card += `<div class="ai-card__title">\uD83C\uDF73 ${escapeHtml(title)}</div>`;
 
     if (tags.length) {
       card += `<div class="ai-tags">`;
@@ -1043,17 +1085,17 @@ function renderAiRecipes(out) {
     }
 
     if (ingClean.length) {
-      card += `<div class="ai-subtitle">ðŸ§¾ IngrÃ©dients</div>`;
+      card += `<div class="ai-subtitle">\uD83E\uDDFE Ingr\u00E9dients</div>`;
       card += `<ul class="ai-list">${ingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (missingClean.length) {
-      card += `<div class="ai-subtitle">ðŸ›ï¸ Ã€ acheter (manquants)</div>`;
+      card += `<div class="ai-subtitle">\uD83D\uDED2 \u00C0 acheter (manquants)</div>`;
       card += `<ul class="ai-list">${missingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (stepsClean.length) {
-      card += `<div class="ai-subtitle">ðŸ‘¨â€ðŸ³ Ã‰tapes</div>`;
+      card += `<div class="ai-subtitle">\uD83D\uDC68\u200D\uD83C\uDF73 \u00C9tapes</div>`;
       card += `<ul class="ai-list">${stepsClean.map((st) => `<li>${escapeHtml(st)}</li>`).join("")}</ul>`;
     }
 
@@ -1064,7 +1106,7 @@ function renderAiRecipes(out) {
   }
 
   if (cards.length) html += cards.join("");
-  else html += `<div class="ai-render__empty">Aucune recette lisible trouvÃ©e. (Le bouton â€œAppliquerâ€ peut quand mÃªme fonctionner si des actions existent.)</div>`;
+  else html += `<div class="ai-render__empty">Aucune recette lisible trouv\u00E9e. (Le bouton "Appliquer" peut quand m\u00EAme fonctionner si des actions existent.)</div>`;
 
   const globalMissingLines = [];
   for (const x of globalMissing) {
@@ -1081,7 +1123,7 @@ function renderAiRecipes(out) {
   if (globalMissingClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">ðŸ›’ Achats proposÃ©s</div>
+        <div class="ai-card__title">\uD83D\uDED2 Achats propos\u00E9s</div>
         <div class="ai-subtitle">Liste globale</div>
         <ul class="ai-list">
           ${globalMissingClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
@@ -1090,7 +1132,7 @@ function renderAiRecipes(out) {
     `;
   }
 
-  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">â€”</div>`;
+  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">\u2014</div>`;
 }
 
 // ------------------ AI render: Budget ------------------
@@ -1098,7 +1140,7 @@ function renderAiBudget(out) {
   if (!els.aiOutBudget) return;
 
   if (!out) {
-    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">â€”</div>`;
+    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
     return;
   }
 
@@ -1113,7 +1155,7 @@ function renderAiBudget(out) {
   if (message) {
     html += `
       <div class="ai-callout">
-        <div class="ai-callout__title">ðŸ“Œ RÃ©sumÃ©</div>
+        <div class="ai-callout__title">\uD83D\uDCCC R\u00E9sum\u00E9</div>
         <div class="ai-callout__text">${escapeHtml(message)}</div>
       </div>
     `;
@@ -1122,7 +1164,7 @@ function renderAiBudget(out) {
   if (est !== null && est !== undefined && String(est).trim() !== "") {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">ðŸ§¾ Estimation</div>
+        <div class="ai-card__title">\uD83E\uDDFE Estimation</div>
         <div class="ai-card__why">${escapeHtml(String(est))}</div>
       </div>
     `;
@@ -1139,18 +1181,18 @@ function renderAiBudget(out) {
       const breakfast = (m.breakfast || m.petit_dej || m.petitdej || "").toString().trim();
       const lunch = (m.lunch || m.dejeuner || m.midi || "").toString().trim();
       const dinner = (m.dinner || m.diner || m.soir || "").toString().trim();
-      if (breakfast) lines.push(`ðŸ¥£ ${breakfast}`);
-      if (lunch) lines.push(`ðŸ½ï¸ ${lunch}`);
-      if (dinner) lines.push(`ðŸŒ™ ${dinner}`);
-      const head = [day, title].filter(Boolean).join(" â€” ");
-      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" â€¢ "))}` : ""}</li>`);
-      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" â€¢ "))}</li>`);
+      if (breakfast) lines.push(`\uD83E\uDD63 ${breakfast}`);
+      if (lunch) lines.push(`\uD83C\uDF7D\uFE0F ${lunch}`);
+      if (dinner) lines.push(`\uD83C\uDF19 ${dinner}`);
+      const head = [day, title].filter(Boolean).join(" \u2014 ");
+      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" \u2022 "))}` : ""}</li>`);
+      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" \u2022 "))}</li>`);
     }
 
     if (cardParts.length) {
       html += `
         <div class="ai-card">
-          <div class="ai-card__title">ðŸ“… Menu semaine</div>
+          <div class="ai-card__title">\uD83D\uDCC5 Menu semaine</div>
           <ul class="ai-list">
             ${cardParts.join("")}
           </ul>
@@ -1174,8 +1216,8 @@ function renderAiBudget(out) {
   if (shopClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">ðŸ›’ Liste de courses</div>
-        <div class="ai-subtitle">Tu peux cliquer â€œAppliquerâ€ pour cocher/ajouter automatiquement</div>
+        <div class="ai-card__title">\uD83D\uDED2 Liste de courses</div>
+        <div class="ai-subtitle">Tu peux cliquer "Appliquer" pour cocher/ajouter automatiquement</div>
         <ul class="ai-list">
           ${shopClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
         </ul>
@@ -1187,7 +1229,7 @@ function renderAiBudget(out) {
   if (tipsClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">ðŸ’¡ Conseils</div>
+        <div class="ai-card__title">\uD83D\uDCA1 Conseils</div>
         <ul class="ai-list">
           ${tipsClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
         </ul>
@@ -1198,8 +1240,8 @@ function renderAiBudget(out) {
   if (!html) {
     html = `
       <div class="ai-card">
-        <div class="ai-card__title">ðŸ“Œ RÃ©sultat</div>
-        <div class="ai-card__why">Format inattendu cÃ´tÃ© IA â€” voici la donnÃ©e brute :</div>
+        <div class="ai-card__title">\uD83D\uDCCC R\u00E9sultat</div>
+        <div class="ai-card__why">Format inattendu c\u00F4t\u00E9 IA \u2014 voici la donn\u00E9e brute :</div>
         <pre class="pre">${escapeHtml(JSON.stringify(out, null, 2))}</pre>
       </div>
     `;
@@ -1263,7 +1305,7 @@ els.btnClearAi.forEach((b) => {
   b.addEventListener("click", () => {
     lastAiPayload = null;
     lastAiKind = null;
-    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">â€”</div>`;
+    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
     if (els.btnApplyAi) els.btnApplyAi.disabled = true;
   });
 });
@@ -1272,11 +1314,11 @@ els.btnClearAi.forEach((b) => {
 els.btnClearAiBudget?.addEventListener("click", () => {
   lastAiPayload = null;
   lastAiKind = null;
-  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">â€”</div>`;
+  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
   if (els.btnApplyAiBudget) els.btnApplyAiBudget.disabled = true;
 });
 
-// âœ… Appliquer actions (mutualisÃ©)
+// ✅ Appliquer actions (mutualisé)
 function applyAiActions(out) {
   if (!out || !Array.isArray(out.actions)) return false;
 
@@ -1291,7 +1333,7 @@ function applyAiActions(out) {
 
     const it = findItemBest(rawName);
 
-    // catÃ©gorie seulement si fournie explicitement par l'IA (utile uniquement pour les nouveaux items)
+    // catégorie seulement si fournie explicitement par l'IA (utile uniquement pour les nouveaux items)
     const hasExplicitCategory =
       Object.prototype.hasOwnProperty.call(a, "category") &&
       String(a.category || "").trim() !== "";
@@ -1309,12 +1351,10 @@ function applyAiActions(out) {
       }
     } else if (type === "add_item") {
       if (it) {
-        // âœ… FIX: existe dÃ©jÃ  => on coche + qty, MAIS on ne change JAMAIS sa catÃ©gorie
+        // ✅ existe déjà => on coche + qty, MAIS on ne change JAMAIS sa catégorie
         it.checked = true;
         const q = clamp(Number(a.qty) || 1, 1, 999);
         if (q > 1) it.qty = q;
-
-        // âŒ Important: ne pas dÃ©placer lâ€™item existant (sinon Ã§a "bouge toute la liste")
         changed = true;
       } else {
         const name = rawName;
@@ -1346,10 +1386,10 @@ function applyAiActions(out) {
 els.btnApplyAi?.addEventListener("click", () => {
   const ok = applyAiActions(lastAiPayload);
   if (ok) {
-    alert("OK â€” actions appliquÃ©es âœ…");
+    alert(`OK \u2014 actions appliqu\u00E9es \u2705`);
     setActiveTab("list");
   } else {
-    alert("Rien Ã  appliquer (actions non reconnues ou produits introuvables).");
+    alert("Rien \u00E0 appliquer (actions non reconnues ou produits introuvables).");
   }
 });
 
@@ -1357,10 +1397,10 @@ els.btnApplyAi?.addEventListener("click", () => {
 els.btnApplyAiBudget?.addEventListener("click", () => {
   const ok = applyAiActions(lastAiPayload);
   if (ok) {
-    alert("OK â€” actions appliquÃ©es âœ…");
+    alert(`OK \u2014 actions appliqu\u00E9es \u2705`);
     setActiveTab("list");
   } else {
-    alert("Rien Ã  appliquer (actions non reconnues ou produits introuvables).");
+    alert("Rien \u00E0 appliquer (actions non reconnues ou produits introuvables).");
   }
 });
 
@@ -1376,8 +1416,8 @@ setActiveTab("list");
 render();
 
 if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
-  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">â€”</div>`;
+  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
 }
 if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
-  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">â€”</div>`;
+  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
 }

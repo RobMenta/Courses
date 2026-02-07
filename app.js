@@ -23,22 +23,22 @@ const DEFAULT_SETTINGS = {
 
 // ------------------ CATALOG (TES BLOCS + TON ORDRE) ------------------
 const CATEGORIES = [
-  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "D\u00E9bardeur blanc"] },
+  { name: "Divers", items: ["Tupperwear", "Lingette voiture", "Tableaux", "Débardeur blanc"] },
   {
     name: "Soins",
     items: [
       "Shampoing",
-      "Apr\u00E8s Shampoing",
+      "Après Shampoing",
       "Laque",
       "Deo",
-      "Cr\u00E8me hyd",
+      "Crème hyd",
       "Masque visage",
       "Gel douche",
       "Coton tige",
       "Bain de bouche",
       "Gratte langue",
       "Dentifrice",
-      "Brosse \u00E0 dent",
+      "Brosse à dent",
       "Mouchoir"
     ]
   },
@@ -46,22 +46,22 @@ const CATEGORIES = [
     name: "Entretient 1",
     items: [
       "Pierre d'argile",
-      "Eau d\u00E9min\u00E9ralis\u00E9e",
-      "Alcool m\u00E9nag\u00E9",
+      "Eau déminéralisée",
+      "Alcool ménagé",
       "Savon noir",
       "Acide chlorydrique",
       "Bicarbonate de soude",
       "Percarbonate",
       "Acide citrique",
       "Cristaux de soude",
-      "Vinaigre m\u00E9nag\u00E9",
+      "Vinaigre ménagé",
       "Sel d'oseille"
     ]
   },
   {
     name: "Entretient 2",
     items: [
-      "\u00C9ponges",
+      "Éponges",
       "Lessive",
       "Destop",
       "Adoucissant",
@@ -74,39 +74,39 @@ const CATEGORIES = [
     ]
   },
   { name: "Boissons 1", items: ["Lait", "Soft", "Sirop", "Jus"] },
-  { name: "Boissons 2", items: ["Bi\u00E8res", "Vin blanc"] },
+  { name: "Boissons 2", items: ["Bières", "Vin blanc"] },
   {
     name: "Petit dej 1",
     items: [
       "Sucre",
-      "P\u00E9pite choco",
+      "Pépite choco",
       "Agar-agar",
       "Farine",
       "Confiture",
       "Miel",
-      "Compotes \u00E0 boire",
+      "Compotes à boire",
       "Cornichon"
     ]
   },
-  { name: "Petit dej 2", items: ["Caf\u00E9", "Th\u00E9", "Flocon d'avoine", "Barre C\u00E9r\u00E9ale"] },
+  { name: "Petit dej 2", items: ["Café", "Thé", "Flocon d'avoine", "Barre Céréale"] },
   { name: "Sucreries", items: ["Bonbons", "Pastille menthe", "Country", "Prince"] },
   {
     name: "Sec 1",
     items: ["Olives", "Huile d'olive", "Moutardes", "Vinaigre balsamique", "Gros sel", "Herbe de provence", "Cub'or", "Piment de cayenne"]
   },
-  { name: "Boites 1", items: ["Ma\u00EFs", "Pois chiches"] },
-  { name: "Boites 2", items: ["Thon", "Cro\u00FBtons", "Riz", "Riz/quinoa pr\u00E9 cuit", "Pur\u00E9e", "P\u00E2tes"] },
+  { name: "Boites 1", items: ["Maïs", "Pois chiches"] },
+  { name: "Boites 2", items: ["Thon", "Croûtons", "Riz", "Riz/quinoa pré cuit", "Purée", "Pâtes"] },
   { name: "Frais 1", items: ["Tranche dinde", "Lardon", "Carottes", "Gnocchi"] },
-  { name: "Frais 2", items: ["Yaourt", "Skyr \u00E0 boire", "Compotes"] },
+  { name: "Frais 2", items: ["Yaourt", "Skyr à boire", "Compotes"] },
   { name: "Frais 3", items: ["Oeufs", "Fromage"] },
   {
-    name: "Fruits/l\u00E9gumes",
+    name: "Fruits/légumes",
     items: ["Endives", "Patate douce", "Tomates", "Avocats", "Concombre", "Poivrons", "Bananes", "Fraises", "Pommes", "Oignons", "Saumon", "Pomme de terre"]
   },
-  { name: "Viandes", items: ["Saucisses", "Escalope", "Poisson pan\u00E9", "Cordon bleu"] },
+  { name: "Viandes", items: ["Saucisses", "Escalope", "Poisson pané", "Cordon bleu"] },
   {
-    name: "Surgel\u00E9",
-    items: ["Poivron surgel\u00E9", "Steak", "Poisson", "nuggets", "Poisson pan\u00E9 (surgel\u00E9)", "Pomme de terre surgel\u00E9", "Glaces"]
+    name: "Surgelé",
+    items: ["Poivron surgelé", "Steak", "Poisson", "nuggets", "Poisson pané (surgelé)", "Pomme de terre surgelé", "Glaces"]
   }
 ];
 
@@ -340,8 +340,8 @@ function computeTotal() {
   if (els.totalValue) els.totalValue.textContent = formatEUR(total);
   if (els.totalHint) {
     els.totalHint.textContent =
-      count === 0 ? "Active un produit + saisis un prix pour l\u2019ajouter au total."
-                 : `${count} produit(s) activ\u00E9(s).`;
+      count === 0 ? "Active un produit + saisis un prix pour l’ajouter au total."
+                 : `${count} produit(s) activé(s).`;
   }
 }
 
@@ -367,7 +367,7 @@ function makeCategorySelect(current, onChange) {
   const sel = document.createElement("select");
   sel.className = "select";
   sel.title = "Changer de bloc";
-  sel.setAttribute("aria-label", "Cat\u00E9gorie");
+  sel.setAttribute("aria-label", "Catégorie");
   sel.style.width = "120px";
   sel.style.maxWidth = "34vw";
 
@@ -435,10 +435,10 @@ function render() {
 
       const handle = document.createElement("div");
       handle.className = "handle";
-      handle.textContent = "\u2630"; // ☰
-      handle.title = f ? "R\u00E9ordonnancement d\u00E9sactiv\u00E9 pendant la recherche" : "Glisser pour r\u00E9ordonner";
+      handle.textContent = "☰";
+      handle.title = f ? "Réordonnancement désactivé pendant la recherche" : "Glisser pour réordonner";
       handle.setAttribute("role", "button");
-      handle.setAttribute("aria-label", "R\u00E9ordonner");
+      handle.setAttribute("aria-label", "Réordonner");
       handle.tabIndex = 0;
 
       const toggle = document.createElement("button");
@@ -457,7 +457,7 @@ function render() {
 
       const sub = document.createElement("div");
       sub.className = "name__sub";
-      sub.textContent = "Prix unitaire \u00D7 quantit\u00E9 (activ\u00E9 = total)";
+      sub.textContent = "Prix unitaire × quantité (activé = total)";
 
       name.appendChild(nameTitle);
       name.appendChild(sub);
@@ -476,7 +476,7 @@ function render() {
       for (const v of qopts) {
         const opt = document.createElement("option");
         opt.value = String(v);
-        opt.textContent = "\u00D7" + String(v); // ×
+        opt.textContent = "×" + String(v);
         if (Number(it.qty) === v) opt.selected = true;
         qty.appendChild(opt);
       }
@@ -490,7 +490,7 @@ function render() {
 
       const del = document.createElement("button");
       del.className = "delete";
-      del.textContent = "\uD83D\uDDD1\uFE0F"; // 🗑️
+      del.textContent = "🗑️";
       del.title = "Supprimer";
 
       controls.appendChild(price);
@@ -823,6 +823,17 @@ function findItemBest(name) {
   return null;
 }
 
+/* ✅ NOUVEAU: match EXACT pour l'ajout manuel
+   - "crème fraîche" ne doit JAMAIS matcher "Crème hyd"
+   - on accepte uniquement égalité après normalisation (accents/casse)
+*/
+function findItemExact(name) {
+  const q = (name || "").toString().trim();
+  if (!q) return null;
+  const qn = norm(q);
+  return state.items.find((it) => norm(it.name) === qn) || null;
+}
+
 function insertItemInCategoryOrder(newItem) {
   const cat = sanitizeCategory(newItem.category);
 
@@ -853,9 +864,9 @@ els.btnAddConfirm?.addEventListener("click", (e) => {
   const catSel = ensureAddCategorySelect();
   const category = sanitizeCategory(catSel?.value || "Divers");
 
-  const exists = findItemBest(name);
+  // ✅ IMPORTANT: ajout manuel = EXACT uniquement (pas de fuzzy match)
+  const exists = findItemExact(name);
   if (exists) {
-    // ✅ FIX: si ça matche un item existant, on le coche, MAIS on ne le déplace plus
     exists.checked = true;
     saveState(state);
     closeAdd();
@@ -898,7 +909,7 @@ els.btnResetPrices?.addEventListener("click", () => {
 });
 
 els.btnResetAll?.addEventListener("click", () => {
-  if (!confirm("Reset complet (ordre, activations, prix, quantit\u00E9s) ?")) return;
+  if (!confirm("Reset complet (ordre, activations, prix, quantités) ?")) return;
   localStorage.removeItem(STORAGE_KEY);
   state = structuredClone(INITIAL_STATE);
   saveState(state);
@@ -945,7 +956,7 @@ function getCheckedSummary() {
 async function callAI(kind, prompt, extra = {}) {
   const endpoint = (loadSettings().aiEndpoint || "").trim();
   if (!endpoint) {
-    alert("Configure d'abord l'URL backend IA dans \u2699\uFE0F R\u00E9glages.");
+    alert("Configure d'abord l'URL backend IA dans ⚙️ Réglages.");
     return null;
   }
 
@@ -1009,7 +1020,7 @@ function renderAiRecipes(out) {
   if (!els.aiOutRecipes) return;
 
   if (!out) {
-    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
+    els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
     return;
   }
 
@@ -1022,7 +1033,7 @@ function renderAiRecipes(out) {
   if (message) {
     html += `
       <div class="ai-callout">
-        <div class="ai-callout__title">\uD83E\uDDE0 R\u00E9sum\u00E9</div>
+        <div class="ai-callout__title">🧠 Résumé</div>
         <div class="ai-callout__text">${escapeHtml(message)}</div>
       </div>
     `;
@@ -1043,8 +1054,8 @@ function renderAiRecipes(out) {
     const missing = pickArray(r, ["missing_items", "missing", "to_buy"]) || [];
 
     const tags = [];
-    if (time) tags.push(`\u23F1\uFE0F ${time}`);
-    if (difficulty) tags.push(`\uD83D\uDE0C ${difficulty}`);
+    if (time) tags.push(`⏱️ ${time}`);
+    if (difficulty) tags.push(`😌 ${difficulty}`);
 
     const ingLines = [];
     for (const x of ingredients) {
@@ -1076,7 +1087,7 @@ function renderAiRecipes(out) {
     const missingClean = uniqStrings(missingLines);
 
     let card = `<div class="ai-card">`;
-    card += `<div class="ai-card__title">\uD83C\uDF73 ${escapeHtml(title)}</div>`;
+    card += `<div class="ai-card__title">🍳 ${escapeHtml(title)}</div>`;
 
     if (tags.length) {
       card += `<div class="ai-tags">`;
@@ -1085,17 +1096,17 @@ function renderAiRecipes(out) {
     }
 
     if (ingClean.length) {
-      card += `<div class="ai-subtitle">\uD83E\uDDFE Ingr\u00E9dients</div>`;
+      card += `<div class="ai-subtitle">🧾 Ingrédients</div>`;
       card += `<ul class="ai-list">${ingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (missingClean.length) {
-      card += `<div class="ai-subtitle">\uD83D\uDED2 \u00C0 acheter (manquants)</div>`;
+      card += `<div class="ai-subtitle">🛒 À acheter (manquants)</div>`;
       card += `<ul class="ai-list">${missingClean.map((it) => `<li>${escapeHtml(it)}</li>`).join("")}</ul>`;
     }
 
     if (stepsClean.length) {
-      card += `<div class="ai-subtitle">\uD83D\uDC68\u200D\uD83C\uDF73 \u00C9tapes</div>`;
+      card += `<div class="ai-subtitle">👨‍🍳 Étapes</div>`;
       card += `<ul class="ai-list">${stepsClean.map((st) => `<li>${escapeHtml(st)}</li>`).join("")}</ul>`;
     }
 
@@ -1106,7 +1117,7 @@ function renderAiRecipes(out) {
   }
 
   if (cards.length) html += cards.join("");
-  else html += `<div class="ai-render__empty">Aucune recette lisible trouv\u00E9e. (Le bouton "Appliquer" peut quand m\u00EAme fonctionner si des actions existent.)</div>`;
+  else html += `<div class="ai-render__empty">Aucune recette lisible trouvée. (Le bouton "Appliquer" peut quand même fonctionner si des actions existent.)</div>`;
 
   const globalMissingLines = [];
   for (const x of globalMissing) {
@@ -1123,7 +1134,7 @@ function renderAiRecipes(out) {
   if (globalMissingClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">\uD83D\uDED2 Achats propos\u00E9s</div>
+        <div class="ai-card__title">🛒 Achats proposés</div>
         <div class="ai-subtitle">Liste globale</div>
         <ul class="ai-list">
           ${globalMissingClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
@@ -1132,7 +1143,7 @@ function renderAiRecipes(out) {
     `;
   }
 
-  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">\u2014</div>`;
+  els.aiOutRecipes.innerHTML = html || `<div class="ai-render__empty">—</div>`;
 }
 
 // ------------------ AI render: Budget ------------------
@@ -1140,7 +1151,7 @@ function renderAiBudget(out) {
   if (!els.aiOutBudget) return;
 
   if (!out) {
-    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
+    els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
     return;
   }
 
@@ -1155,7 +1166,7 @@ function renderAiBudget(out) {
   if (message) {
     html += `
       <div class="ai-callout">
-        <div class="ai-callout__title">\uD83D\uDCCC R\u00E9sum\u00E9</div>
+        <div class="ai-callout__title">📌 Résumé</div>
         <div class="ai-callout__text">${escapeHtml(message)}</div>
       </div>
     `;
@@ -1164,7 +1175,7 @@ function renderAiBudget(out) {
   if (est !== null && est !== undefined && String(est).trim() !== "") {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">\uD83E\uDDFE Estimation</div>
+        <div class="ai-card__title">🧾 Estimation</div>
         <div class="ai-card__why">${escapeHtml(String(est))}</div>
       </div>
     `;
@@ -1181,18 +1192,18 @@ function renderAiBudget(out) {
       const breakfast = (m.breakfast || m.petit_dej || m.petitdej || "").toString().trim();
       const lunch = (m.lunch || m.dejeuner || m.midi || "").toString().trim();
       const dinner = (m.dinner || m.diner || m.soir || "").toString().trim();
-      if (breakfast) lines.push(`\uD83E\uDD63 ${breakfast}`);
-      if (lunch) lines.push(`\uD83C\uDF7D\uFE0F ${lunch}`);
-      if (dinner) lines.push(`\uD83C\uDF19 ${dinner}`);
-      const head = [day, title].filter(Boolean).join(" \u2014 ");
-      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" \u2022 "))}` : ""}</li>`);
-      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" \u2022 "))}</li>`);
+      if (breakfast) lines.push(`🥣 ${breakfast}`);
+      if (lunch) lines.push(`🍽️ ${lunch}`);
+      if (dinner) lines.push(`🌙 ${dinner}`);
+      const head = [day, title].filter(Boolean).join(" — ");
+      if (head) cardParts.push(`<li><strong>${escapeHtml(head)}</strong>${lines.length ? `<br>${escapeHtml(lines.join(" • "))}` : ""}</li>`);
+      else if (lines.length) cardParts.push(`<li>${escapeHtml(lines.join(" • "))}</li>`);
     }
 
     if (cardParts.length) {
       html += `
         <div class="ai-card">
-          <div class="ai-card__title">\uD83D\uDCC5 Menu semaine</div>
+          <div class="ai-card__title">📅 Menu semaine</div>
           <ul class="ai-list">
             ${cardParts.join("")}
           </ul>
@@ -1216,7 +1227,7 @@ function renderAiBudget(out) {
   if (shopClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">\uD83D\uDED2 Liste de courses</div>
+        <div class="ai-card__title">🛒 Liste de courses</div>
         <div class="ai-subtitle">Tu peux cliquer "Appliquer" pour cocher/ajouter automatiquement</div>
         <ul class="ai-list">
           ${shopClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
@@ -1229,7 +1240,7 @@ function renderAiBudget(out) {
   if (tipsClean.length) {
     html += `
       <div class="ai-card">
-        <div class="ai-card__title">\uD83D\uDCA1 Conseils</div>
+        <div class="ai-card__title">💡 Conseils</div>
         <ul class="ai-list">
           ${tipsClean.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}
         </ul>
@@ -1240,8 +1251,8 @@ function renderAiBudget(out) {
   if (!html) {
     html = `
       <div class="ai-card">
-        <div class="ai-card__title">\uD83D\uDCCC R\u00E9sultat</div>
-        <div class="ai-card__why">Format inattendu c\u00F4t\u00E9 IA \u2014 voici la donn\u00E9e brute :</div>
+        <div class="ai-card__title">📌 Résultat</div>
+        <div class="ai-card__why">Format inattendu côté IA — voici la donnée brute :</div>
         <pre class="pre">${escapeHtml(JSON.stringify(out, null, 2))}</pre>
       </div>
     `;
@@ -1305,7 +1316,7 @@ els.btnClearAi.forEach((b) => {
   b.addEventListener("click", () => {
     lastAiPayload = null;
     lastAiKind = null;
-    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
+    if (els.aiOutRecipes) els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
     if (els.btnApplyAi) els.btnApplyAi.disabled = true;
   });
 });
@@ -1314,7 +1325,7 @@ els.btnClearAi.forEach((b) => {
 els.btnClearAiBudget?.addEventListener("click", () => {
   lastAiPayload = null;
   lastAiKind = null;
-  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
+  if (els.aiOutBudget) els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
   if (els.btnApplyAiBudget) els.btnApplyAiBudget.disabled = true;
 });
 
@@ -1386,10 +1397,10 @@ function applyAiActions(out) {
 els.btnApplyAi?.addEventListener("click", () => {
   const ok = applyAiActions(lastAiPayload);
   if (ok) {
-    alert(`OK \u2014 actions appliqu\u00E9es \u2705`);
+    alert(`OK — actions appliquées ✅`);
     setActiveTab("list");
   } else {
-    alert("Rien \u00E0 appliquer (actions non reconnues ou produits introuvables).");
+    alert("Rien à appliquer (actions non reconnues ou produits introuvables).");
   }
 });
 
@@ -1397,10 +1408,10 @@ els.btnApplyAi?.addEventListener("click", () => {
 els.btnApplyAiBudget?.addEventListener("click", () => {
   const ok = applyAiActions(lastAiPayload);
   if (ok) {
-    alert(`OK \u2014 actions appliqu\u00E9es \u2705`);
+    alert(`OK — actions appliquées ✅`);
     setActiveTab("list");
   } else {
-    alert("Rien \u00E0 appliquer (actions non reconnues ou produits introuvables).");
+    alert("Rien à appliquer (actions non reconnues ou produits introuvables).");
   }
 });
 
@@ -1416,8 +1427,8 @@ setActiveTab("list");
 render();
 
 if (els.aiOutRecipes && !els.aiOutRecipes.innerHTML.trim()) {
-  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
+  els.aiOutRecipes.innerHTML = `<div class="ai-render__empty">—</div>`;
 }
 if (els.aiOutBudget && !els.aiOutBudget.innerHTML.trim()) {
-  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">\u2014</div>`;
+  els.aiOutBudget.innerHTML = `<div class="ai-render__empty">—</div>`;
 }
